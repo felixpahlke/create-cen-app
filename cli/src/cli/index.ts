@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { Command } from "commander";
 import inquirer from "inquirer";
-import { CREATE_CEN_APP, DEFAULT_APP_NAME } from "~/consts.js";
+import { CREATE_CEN_APP, DEFAULT_APP_NAME, DEFAULT_DISPLAY_NAME } from "~/consts.js";
 import { type AvailablePackages } from "~/installers/index.js";
 import { availablePackages } from "~/installers/index.js";
 import { getVersion } from "~/utils/getCENVersion.js";
@@ -37,7 +37,7 @@ interface CliResults {
 
 const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
-  displayName: "MVP-Starter", // TODO: change to variable
+  displayName: DEFAULT_DISPLAY_NAME,
   packages: ["nextAuth", "prisma", "tailwind", "trpc"],
   flags: {
     noGit: false,
@@ -180,7 +180,15 @@ export const runCli = async () => {
       cliResults.displayName = await promptDisplayName();
 
       await promptLanguage();
-      cliResults.packages = await promptPackages();
+
+      const useTailwind = await promptTailwind();
+      if (useTailwind) {
+        cliResults.packages = ["tailwind"];
+      }
+
+      // TODO: add more supported packages
+      // cliResults.packages = await promptPackages();
+
       if (!cliResults.flags.noGit) {
         cliResults.flags.noGit = !(await promptGit());
       }
@@ -192,8 +200,8 @@ export const runCli = async () => {
       cliResults.flags.importAlias = await promptImportAlias();
     }
   } catch (err) {
-    // If the user is not calling create-t3-app from an interactive terminal, inquirer will throw an error with isTTYError = true
-    // If this happens, we catch the error, tell the user what has happened, and then continue to run the program with a default t3 app
+    // If the user is not calling create-cen-app from an interactive terminal, inquirer will throw an error with isTTYError = true
+    // If this happens, we catch the error, tell the user what has happened, and then continue to run the program with a default CEN app
     // Otherwise we have to do some fancy namespace extension logic on the Error type which feels overkill for one line
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (err instanceof Error && (err as any).isTTYError) {
@@ -205,7 +213,7 @@ export const runCli = async () => {
       }>({
         name: "shouldContinue",
         type: "confirm",
-        message: `Continue scaffolding a default T3 app?`,
+        message: `Continue scaffolding a default CEN app?`,
         default: true,
       });
 
@@ -214,7 +222,7 @@ export const runCli = async () => {
         process.exit(0);
       }
 
-      logger.info(`Bootstrapping a default T3 app in ./${cliResults.appName}`);
+      logger.info(`Bootstrapping a default CEN app in ./${cliResults.appName}`);
     } else {
       throw err;
     }
@@ -242,8 +250,8 @@ const promptDisplayName = async (): Promise<string> => {
   const { displayName } = await inquirer.prompt<Pick<CliResults, "displayName">>({
     name: "displayName",
     type: "input",
-    message: "What should be the displayed Name of your project?",
-    // default: defaultOptions.appName, TODO: add default
+    message: "What should be the displayed Name in your Application?",
+    default: defaultOptions.displayName,
     // validate: validateAppName, TODO: add validation
     transformer: (input: string) => {
       return input.trim();
@@ -272,21 +280,42 @@ const promptLanguage = async (): Promise<void> => {
   }
 };
 
-const promptPackages = async (): Promise<AvailablePackages[]> => {
-  const { packages } = await inquirer.prompt<Pick<CliResults, "packages">>({
-    name: "packages",
-    type: "checkbox",
-    message: "Which packages would you like to enable?",
-    choices: availablePackages
-      .filter((pkg) => pkg !== "envVariables") // don't prompt for env-vars
-      .map((pkgName) => ({
-        name: pkgName,
-        checked: false,
-      })),
+// TODO: add more supported packages
+
+// const promptPackages = async (): Promise<AvailablePackages[]> => {
+//   const { packages } = await inquirer.prompt<Pick<CliResults, "packages">>({
+//     name: "packages",
+//     type: "checkbox",
+//     message: "Which packages would you like to enable?",
+//     choices: availablePackages
+//       .filter((pkg) => pkg !== "envVariables") // don't prompt for env-vars
+//       .map((pkgName) => ({
+//         name: pkgName,
+//         checked: false,
+//       })),
+//   });
+
+//   return packages;
+// };
+
+const promptTailwind = async (): Promise<boolean> => {
+  const { tailwind } = await inquirer.prompt<{ tailwind: boolean }>({
+    name: "tailwind",
+    type: "confirm",
+    message: "Would you like to use Tailwind CSS? (highly recommended)",
+    default: true,
   });
 
-  return packages;
+  if (tailwind) {
+    logger.success("Nice one! We'll install Tailwind CSS!");
+  } else {
+    logger.info("No worries! You can always add Tailwind CSS later.");
+  }
+
+  return tailwind;
 };
+
+
 
 const promptGit = async (): Promise<boolean> => {
   const { git } = await inquirer.prompt<{ git: boolean }>({

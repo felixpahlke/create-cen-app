@@ -2,9 +2,14 @@
 
 import { atom, useRecoilState } from "recoil";
 
-const themeState = atom({
+type CarbonTheme = "white" | "g90" | "g100" | "g10";
+
+
+const themeState = atom<CarbonTheme>({
   key: "themeState",
   default: "white",
 });
 
-export default () => useRecoilState(themeState);
+const useTheme = () => useRecoilState(themeState);
+
+export default useTheme;
