@@ -29,8 +29,8 @@ export const tailwindInstaller: Installer = ({ projectDir }) => {
   const prettierSrc = path.join(extrasDir, "config/prettier.config.cjs");
   const prettierDest = path.join(projectDir, "prettier.config.cjs");
 
-  const cssSrc = path.join(extrasDir, "src/styles/globals.css");
-  const cssDest = path.join(projectDir, "src/styles/globals.css");
+  const cssSrc = path.join(extrasDir, "src/styles/tailwind.css");
+  const cssDest = path.join(projectDir, "src/styles/tailwind.css");
 
   fs.copySync(twCfgSrc, twCfgDest);
   fs.copySync(postcssCfgSrc, postcssCfgDest);
@@ -40,4 +40,7 @@ export const tailwindInstaller: Installer = ({ projectDir }) => {
   // Remove vanilla css file
   const indexModuleCss = path.join(projectDir, "src/pages/index.module.css");
   fs.unlinkSync(indexModuleCss);
+  // Remove vanilla css file from components
+  const componentsCssModuleDir = path.join(projectDir, "src/components/layout/Layout.module.css");
+  fs.unlinkSync(componentsCssModuleDir);
 };

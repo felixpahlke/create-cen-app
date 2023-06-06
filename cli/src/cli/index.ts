@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { Command } from "commander";
 import inquirer from "inquirer";
-import { CREATE_T3_APP, DEFAULT_APP_NAME } from "~/consts.js";
+import { CREATE_CEN_APP, DEFAULT_APP_NAME } from "~/consts.js";
 import { type AvailablePackages } from "~/installers/index.js";
 import { availablePackages } from "~/installers/index.js";
 import { getVersion } from "~/utils/getT3Version.js";
@@ -30,12 +30,14 @@ interface CliFlags {
 
 interface CliResults {
   appName: string;
+  displayName: string;
   packages: AvailablePackages[];
   flags: CliFlags;
 }
 
 const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
+  displayName: "MVP-Starter", // TODO: change to variable
   packages: ["nextAuth", "prisma", "tailwind", "trpc"],
   flags: {
     noGit: false,
@@ -53,7 +55,7 @@ const defaultOptions: CliResults = {
 export const runCli = async () => {
   const cliResults = defaultOptions;
 
-  const program = new Command().name(CREATE_T3_APP);
+  const program = new Command().name(CREATE_CEN_APP);
 
   // TODO: This doesn't return anything typesafe. Research other options?
   // Emulate from: https://github.com/Schniz/soundtype-commander
@@ -131,7 +133,7 @@ export const runCli = async () => {
   // FIXME: TEMPORARY WARNING WHEN USING YARN 3. SEE ISSUE #57
   if (process.env.npm_config_user_agent?.startsWith("yarn/3")) {
     logger.warn(`  WARNING: It looks like you are using Yarn 3. This is currently not supported,
-  and likely to result in a crash. Please run create-t3-app with another
+  and likely to result in a crash. Please run create-cen-app with another
   package manager such as pnpm, npm, or Yarn Classic.
   See: https://github.com/t3-oss/create-t3-app/issues/57`);
   }
@@ -175,6 +177,8 @@ export const runCli = async () => {
         cliResults.appName = await promptAppName();
       }
 
+      cliResults.displayName = await promptDisplayName();
+
       await promptLanguage();
       cliResults.packages = await promptPackages();
       if (!cliResults.flags.noGit) {
@@ -194,7 +198,7 @@ export const runCli = async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (err instanceof Error && (err as any).isTTYError) {
       logger.warn(`
-  ${CREATE_T3_APP} needs an interactive terminal to provide options`);
+  ${CREATE_CEN_APP} needs an interactive terminal to provide options`);
 
       const { shouldContinue } = await inquirer.prompt<{
         shouldContinue: boolean;
@@ -232,6 +236,21 @@ const promptAppName = async (): Promise<string> => {
   });
 
   return appName;
+};
+
+const promptDisplayName = async (): Promise<string> => {
+  const { displayName } = await inquirer.prompt<Pick<CliResults, "displayName">>({
+    name: "displayName",
+    type: "input",
+    message: "What should be the displayed Name of your project?",
+    // default: defaultOptions.appName, TODO: add default
+    // validate: validateAppName, TODO: add validation
+    transformer: (input: string) => {
+      return input.trim();
+    },
+  });
+
+  return displayName;
 };
 
 const promptLanguage = async (): Promise<void> => {

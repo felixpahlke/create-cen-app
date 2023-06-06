@@ -17,6 +17,7 @@ import { buildPkgInstallerMap } from "~/installers/index.js";
 import { logger } from "~/utils/logger.js";
 import { parseNameAndPath } from "~/utils/parseNameAndPath.js";
 import { renderTitle } from "~/utils/renderTitle.js";
+import replaceTextInFiles from "./utils/replaceTextInFiles.js";
 
 type CT3APackageJSON = PackageJson & {
   ct3aMetadata?: {
@@ -32,6 +33,7 @@ const main = async () => {
   const {
     appName,
     packages,
+    displayName,
     flags: { noGit, noInstall, importAlias },
   } = await runCli();
 
@@ -60,6 +62,16 @@ const main = async () => {
   // update import alias in any generated files if not using the default
   if (importAlias !== "~/") {
     setImportAlias(projectDir, importAlias);
+  }
+
+  // update displayName in files
+  if (displayName) {
+    replaceTextInFiles(projectDir, "\\[project-name\\]", displayName);
+  }
+
+  // remove tailwind css import if not using tailwind
+  if (!usePackages.tailwind.inUse) {
+    replaceTextInFiles(projectDir, "import \"~/styles/tailwind.css\";", "");
   }
 
   if (!noInstall) {

@@ -12,6 +12,15 @@ const config = {
       parserOptions: {
         project: path.join(__dirname, "tsconfig.json"),
       },
+      // needs to be ignored in overrides, otherwise the disabled rules will be re-enabled
+      rules: {
+        "@typescript-eslint/no-unsafe-assignment": "warn",
+        "@typescript-eslint/no-unsafe-call": "warn",
+        "@typescript-eslint/no-unsafe-return": "warn",
+        "@typescript-eslint/no-unsafe-argument": "warn",
+        "@typescript-eslint/no-unsafe-member-access": "warn",
+        "@typescript-eslint/no-misused-promises": "warn",
+      },
     },
   ],
   parser: "@typescript-eslint/parser",
@@ -29,6 +38,7 @@ const config = {
       },
     ],
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    
   },
 };
 

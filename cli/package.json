@@ -1,6 +1,6 @@
 {
-  "name": "create-t3-app",
-  "version": "7.13.1",
+  "name": "create-cen-app",
+  "version": "0.1.0",
   "description": "Create web application with the t3 stack",
   "license": "MIT",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "cli"
   },
   "keywords": [
-    "create-t3-app",
+    "create-cen-app",
     "init.tips",
     "next.js",
     "t3-stack",
@@ -20,7 +20,7 @@
   "type": "module",
   "exports": "./dist/index.js",
   "bin": {
-    "create-t3-app": "./dist/index.js"
+    "create-cen-app": "./dist/index.js"
   },
   "engines": {
     "node": ">=14.16"
@@ -62,7 +62,7 @@
     "@types/fs-extra": "^11.0.1",
     "@types/gradient-string": "^1.1.2",
     "@types/inquirer": "^9.0.3",
-    "@types/node": "^18.16.0",
+    "@types/node": "^18.16.16",
     "next": "^13.4.1",
     "next-auth": "^4.22.1",
     "prettier": "^2.8.8",

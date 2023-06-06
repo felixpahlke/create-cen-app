@@ -39,6 +39,16 @@ const getEnvContent = (usingAuth: boolean, usingPrisma: boolean) => {
   let content = `
 # When adding additional environment variables, the schema in "/src/env.mjs"
 # should be updated accordingly.
+
+# Example:
+# SERVERVAR="foo"
+# NEXT_PUBLIC_CLIENTVAR="bar" (Client env vars must start with NEXT_PUBLIC_)
+
+# You need this in your .env when using Recoil with next.js
+RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED=false
+
+# use this when running the backend locally
+API_BASE_URL="http://localhost:4000"
 `
     .trim()
     .concat("\n");
@@ -62,13 +72,6 @@ NEXTAUTH_URL="http://localhost:3000"
 # Next Auth Discord Provider
 DISCORD_CLIENT_ID=""
 DISCORD_CLIENT_SECRET=""
-`;
-
-  if (!usingAuth && !usingPrisma)
-    content += `
-# Example:
-# SERVERVAR="foo"
-# NEXT_PUBLIC_CLIENTVAR="bar"
 `;
 
   return content;

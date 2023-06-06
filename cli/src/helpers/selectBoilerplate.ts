@@ -62,3 +62,20 @@ export const selectIndexFile = ({
     fs.copySync(indexSrc, indexDest);
   }
 };
+
+export const selectComponentFiles = ({
+  projectDir,
+  packages,
+}: SelectBoilerplateProps) => {
+
+  const componentsDir = path.join(PKG_ROOT, "template/extras/src/components");
+
+  const usingTw = packages.tailwind.inUse;
+
+  if (usingTw) {
+    const twSrc = path.join(componentsDir, "with-tw");
+    const twDest = path.join(projectDir, "src/components");
+    fs.copySync(twSrc, twDest);
+  }
+
+}
