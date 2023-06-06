@@ -4,7 +4,7 @@ import inquirer from "inquirer";
 import { CREATE_CEN_APP, DEFAULT_APP_NAME } from "~/consts.js";
 import { type AvailablePackages } from "~/installers/index.js";
 import { availablePackages } from "~/installers/index.js";
-import { getVersion } from "~/utils/getT3Version.js";
+import { getVersion } from "~/utils/getCENVersion.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { logger } from "~/utils/logger.js";
 import { validateAppName } from "~/utils/validateAppName.js";
@@ -77,7 +77,7 @@ export const runCli = async () => {
     )
     .option(
       "-y, --default",
-      "Bypass the CLI and use all default options to bootstrap a new t3-app",
+      "Bypass the CLI and use all default options to bootstrap a new cen-app",
       false,
     )
     /** START CI-FLAGS */

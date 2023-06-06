@@ -1,12 +1,9 @@
 <p align="center">
-  <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/t3-oss/create-t3-app/99286f37324330ecdf75132fae1f246440a88035/www/public/images/t3-light.svg">
-  <img src="https://raw.githubusercontent.com/t3-oss/create-t3-app/99286f37324330ecdf75132fae1f246440a88035/www/public/images/t3-dark.svg" width="130" alt="Logo for T3">
-</picture>
+Bee
 </p>
 
 <h1 align="center">
-  create-t3-app
+  create-cen-app
 </h1>
 
 <p align="center">
@@ -14,7 +11,7 @@
 </p>
 
 <p align="center">
-  Get started with the <a rel="noopener noreferrer" target="_blank" href="https://init.tips">T3 Stack</a> by running <code>npm create t3-app@latest</code>
+  Get started with the <a rel="noopener noreferrer" target="_blank" href="https://init.tips">T3 Stack</a> by running <code>npm create cen-app@latest</code>
 </p>
 
 <div align="center">
@@ -24,11 +21,7 @@
 
 </div>
 
-<a href="http://www.youtube.com/watch?v=PbjHxIuHduU" target="_blank">
-  <p align="center">
-    <img src="https://t3.gg/random/T3%20Stack%20V4.png" alt="Video thumbnail of Theo with an indecipherable expression on his face" width="320" />
-  </p>
-</a>
+
 
 <a href="http://www.youtube.com/watch?v=PbjHxIuHduU" target="_blank">
   <p align="center">Watch Theo's overview on Youtube here</p>
@@ -101,31 +94,8 @@ pnpm create t3-app@latest
 
 For more advanced usage, check out the [CLI docs](https://create.t3.gg/en/installation).
 
-<h2 id="community">Community</h2>
 
-For help, discussion about best practices, or any other conversation that would benefit create-t3-app:
 
-[Join the T3 Discord Server](https://t3.gg/discord)
-
-<h2 id="contributors">Contributors</h2>
-
-We 💖 contributors! Feel free to contribute to this project but **please read the [Contributing Guidelines](CONTRIBUTING.md) before opening an issue or PR** so you understand the branching strategy and local development environment. We also welcome you to join our [Discord](https://discord.gg/tEAQjDseSX) community for either support or contributing guidance.
-
-<a href="https://github.com/t3-oss/create-t3-app/graphs/contributors">
-  <p align="center">
-    <img width="720" src="https://contrib.rocks/image?repo=t3-oss/create-t3-app" alt="A table of avatars from the project's contributors" />
-  </p>
-</a>
-
-<p align="center">
-  Made with <a rel="noopener noreferrer" target="_blank" href="https://contrib.rocks">contrib.rocks</a>
-</p>
-
-<p align="center">
-  <a rel="noopener noreferrer" target="_blank" href="https://vercel.com/?utm_source=t3-oss&utm_campaign=oss">
-    <img height="34px" src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by vercel">
-  </a>
-</p>
 
 [downloads-image]: https://img.shields.io/npm/dm/create-t3-app?color=364fc7&logoColor=364fc7
 [npm-url]: https://www.npmjs.com/package/create-t3-app

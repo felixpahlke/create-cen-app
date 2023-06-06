@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { installDependencies } from "./helpers/installDependencies.js";
-import { getVersion } from "./utils/getT3Version.js";
+import { getVersion } from "./utils/getCENVersion.js";
 import {
   getNpmVersion,
   renderVersionWarning,

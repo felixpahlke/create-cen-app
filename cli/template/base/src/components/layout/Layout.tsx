@@ -1,6 +1,7 @@
 import Header from "./Header";
 import { Theme } from "@carbon/react";
 import useTheme from "~/atoms/useTheme";
+import styles from "./Layout.module.css";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ export default function Layout({ children }: LayoutProps) {
       <Header />
       <div
         // every pages content goes here
-        className="mt-12 h-[calc(100vh-48px)] overflow-y-auto"
+        className={styles.content}
       >
         {children}
       </div>
