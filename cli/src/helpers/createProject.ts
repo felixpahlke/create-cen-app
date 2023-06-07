@@ -4,6 +4,7 @@ import { scaffoldProject } from "~/helpers/scaffoldProject.js";
 import { selectAppFile, selectComponentFiles, selectIndexFile } from "~/helpers/selectBoilerplate.js";
 import { type PkgInstallerMap } from "~/installers/index.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
+import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
 
 interface CreateProjectOptions {
   projectName: string;
@@ -40,6 +41,14 @@ export const createProject = async ({
   selectAppFile({ projectDir, packages });
   selectIndexFile({ projectDir, packages });
   selectComponentFiles({ projectDir, packages });
+
+
+
+  // remove tailwind css import if not using tailwind
+  if (!packages.tailwind.inUse) {
+    replaceTextInFiles(projectDir, "import \"~/styles/tailwind.css\";", "");
+  }
+
 
   return projectDir;
 };

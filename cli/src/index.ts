@@ -69,10 +69,6 @@ const main = async () => {
     replaceTextInFiles(projectDir, "\\[project-name\\]", displayName);
   }
 
-  // remove tailwind css import if not using tailwind
-  if (!usePackages.tailwind.inUse) {
-    replaceTextInFiles(projectDir, "import \"~/styles/tailwind.css\";", "");
-  }
 
   if (!noInstall) {
     await installDependencies({ projectDir });

@@ -43,4 +43,5 @@ export const tailwindInstaller: Installer = ({ projectDir }) => {
   // Remove vanilla css file from components
   const componentsCssModuleDir = path.join(projectDir, "src/components/layout/Layout.module.css");
   fs.unlinkSync(componentsCssModuleDir);
+
 };

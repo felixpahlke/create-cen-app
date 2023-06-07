@@ -184,6 +184,8 @@ export const runCli = async () => {
       const useTailwind = await promptTailwind();
       if (useTailwind) {
         cliResults.packages = ["tailwind"];
+      } else {
+        cliResults.packages = [];
       }
 
       // TODO: add more supported packages
