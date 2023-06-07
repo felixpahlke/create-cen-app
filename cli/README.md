@@ -62,17 +62,17 @@ To scaffold an app using `create-cen-app`, run any of the following three comman
 ### npm
 
 ```bash
-npm create t3-app@latest
+npm create cen-app@latest
 ```
 
 ### yarn
 
 ```bash
-yarn create t3-app
+yarn create cen-app
 ```
 
 ### pnpm
 
 ```bash
-pnpm create t3-app@latest
+pnpm create cen-app@latest
 ```
