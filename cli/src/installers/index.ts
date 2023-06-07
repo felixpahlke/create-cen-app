@@ -76,11 +76,11 @@ export const backendsDisplayList: BackendDisplay[] = [
     value: "trpc",
     short: "tRPC",
   },
-  // {
-  //   name: "FastAPI (Python web-framework -> great with data science)",
-  //   value: "fastapi",
-  //   short: "FastAPI",
-  // },
+  {
+    name: "FastAPI (Python web-framework -> great with data science)",
+    value: "fastapi",
+    short: "FastAPI",
+  },
   // {
   //   name: "Go - (high performance)",
   //   value: "go",
