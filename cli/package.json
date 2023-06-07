@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kulimantang/create-cen-app.git",
+    "url": "https://github.com/felixpahlke/create-cen-app.git",
     "directory": "cli"
   },
   "keywords": [
