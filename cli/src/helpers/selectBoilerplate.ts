@@ -3,14 +3,9 @@ import path from "path";
 import { PKG_ROOT } from "~/consts.js";
 import { type InstallerOptions } from "~/installers/index.js";
 
-type SelectBoilerplateProps = Required<
-  Pick<InstallerOptions, "projectDir" | "packages">
->;
+type SelectBoilerplateProps = Required<Pick<InstallerOptions, "projectDir" | "packages">>;
 // This generates the _app.tsx file that is used to render the app
-export const selectAppFile = ({
-  projectDir,
-  packages,
-}: SelectBoilerplateProps) => {
+export const selectAppFile = ({ projectDir, packages }: SelectBoilerplateProps) => {
   const appFileDir = path.join(PKG_ROOT, "template/extras/src/pages/_app");
 
   const usingTRPC = packages.trpc.inUse;
@@ -33,10 +28,7 @@ export const selectAppFile = ({
 };
 
 // This selects the proper index.tsx to be used that showcases the chosen tech
-export const selectIndexFile = ({
-  projectDir,
-  packages,
-}: SelectBoilerplateProps) => {
+export const selectIndexFile = ({ projectDir, packages }: SelectBoilerplateProps) => {
   const indexFileDir = path.join(PKG_ROOT, "template/extras/src/pages/index");
 
   const usingTRPC = packages.trpc.inUse;
@@ -62,20 +54,3 @@ export const selectIndexFile = ({
     fs.copySync(indexSrc, indexDest);
   }
 };
-
-export const selectComponentFiles = ({
-  projectDir,
-  packages,
-}: SelectBoilerplateProps) => {
-
-  const componentsDir = path.join(PKG_ROOT, "template/extras/src/components");
-
-  const usingTw = packages.tailwind.inUse;
-
-  if (usingTw) {
-    const twSrc = path.join(componentsDir, "with-tw");
-    const twDest = path.join(projectDir, "src/components");
-    fs.copySync(twSrc, twDest);
-  }
-
-}

@@ -32,10 +32,14 @@ export const tailwindInstaller: Installer = ({ projectDir }) => {
   const cssSrc = path.join(extrasDir, "src/styles/tailwind.css");
   const cssDest = path.join(projectDir, "src/styles/tailwind.css");
 
+  const layoutSrc = path.join(extrasDir, "src/components/with-tw/layout");
+  const layoutDest = path.join(projectDir, "src/components/layout");
+
   fs.copySync(twCfgSrc, twCfgDest);
   fs.copySync(postcssCfgSrc, postcssCfgDest);
   fs.copySync(cssSrc, cssDest);
   fs.copySync(prettierSrc, prettierDest);
+  fs.copySync(layoutSrc, layoutDest); // overwriting the default layout
 
   // Remove vanilla css file
   const indexModuleCss = path.join(projectDir, "src/pages/index.module.css");
@@ -43,5 +47,4 @@ export const tailwindInstaller: Installer = ({ projectDir }) => {
   // Remove vanilla css file from components
   const componentsCssModuleDir = path.join(projectDir, "src/components/layout/Layout.module.css");
   fs.unlinkSync(componentsCssModuleDir);
-
 };

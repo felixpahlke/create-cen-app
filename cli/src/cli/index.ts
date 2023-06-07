@@ -2,8 +2,13 @@ import chalk from "chalk";
 import { Command } from "commander";
 import inquirer from "inquirer";
 import { CREATE_CEN_APP, DEFAULT_APP_NAME, DEFAULT_DISPLAY_NAME } from "~/consts.js";
-import { type AvailablePackages } from "~/installers/index.js";
-import { availablePackages } from "~/installers/index.js";
+import {
+  type AvailableBackends,
+  availablePackages,
+  type AvailablePackages,
+  BackendDisplay,
+  backendsDisplayList,
+} from "~/installers/index.js";
 import { getVersion } from "~/utils/getCENVersion.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { logger } from "~/utils/logger.js";
@@ -32,6 +37,7 @@ interface CliResults {
   appName: string;
   displayName: string;
   packages: AvailablePackages[];
+  backend: AvailableBackends;
   flags: CliFlags;
 }
 
@@ -39,6 +45,7 @@ const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
   displayName: DEFAULT_DISPLAY_NAME,
   packages: ["nextAuth", "prisma", "tailwind", "trpc"],
+  backend: "default",
   flags: {
     noGit: false,
     noInstall: false,
@@ -122,9 +129,7 @@ export const runCli = async () => {
       "afterAll",
       `\n The t3 stack was inspired by ${chalk
         .hex("#E8DCFF")
-        .bold(
-          "@t3dotgg",
-        )} and has been used to build awesome fullstack applications like ${chalk
+        .bold("@t3dotgg")} and has been used to build awesome fullstack applications like ${chalk
         .hex("#E24A8D")
         .underline("https://ping.gg")} \n`,
     )
@@ -186,6 +191,12 @@ export const runCli = async () => {
         cliResults.packages = ["tailwind"];
       } else {
         cliResults.packages = [];
+      }
+
+      cliResults.backend = await promptBackends();
+
+      if (cliResults.backend === "trpc") {
+        cliResults.packages.push("trpc");
       }
 
       // TODO: add more supported packages
@@ -317,7 +328,17 @@ const promptTailwind = async (): Promise<boolean> => {
   return tailwind;
 };
 
+const promptBackends = async (): Promise<AvailableBackends> => {
+  const { backend } = await inquirer.prompt<{ backend: AvailableBackends }>({
+    name: "backend",
+    type: "list",
+    message: "Which backend would you like to use?",
+    choices: backendsDisplayList.map((backendDisplay: BackendDisplay) => backendDisplay),
+    default: "default",
+  });
 
+  return backend;
+};
 
 const promptGit = async (): Promise<boolean> => {
   const { git } = await inquirer.prompt<{ git: boolean }>({
@@ -343,8 +364,7 @@ const promptInstall = async (): Promise<boolean> => {
     name: "install",
     type: "confirm",
     message:
-      `Would you like us to run '${pkgManager}` +
-      (pkgManager === "yarn" ? `'?` : ` install'?`),
+      `Would you like us to run '${pkgManager}` + (pkgManager === "yarn" ? `'?` : ` install'?`),
     default: true,
   });
 
@@ -352,9 +372,7 @@ const promptInstall = async (): Promise<boolean> => {
     logger.success("Alright. We'll install the dependencies for you!");
   } else {
     if (pkgManager === "yarn") {
-      logger.info(
-        `No worries. You can run '${pkgManager}' later to install the dependencies.`,
-      );
+      logger.info(`No worries. You can run '${pkgManager}' later to install the dependencies.`);
     } else {
       logger.info(
         `No worries. You can run '${pkgManager} install' later to install the dependencies.`,

@@ -16,6 +16,9 @@ export const availablePackages = [
 ] as const;
 export type AvailablePackages = (typeof availablePackages)[number];
 
+export const availableBackends = ["default", "trpc", "fastapi", "go"] as const;
+export type AvailableBackends = (typeof availableBackends)[number];
+
 export interface InstallerOptions {
   projectDir: string;
   pkgManager: PackageManager;
@@ -33,9 +36,13 @@ export type PkgInstallerMap = {
   };
 };
 
-export const buildPkgInstallerMap = (
-  packages: AvailablePackages[],
-): PkgInstallerMap => ({
+export type BackendDisplay = {
+  name: string;
+  value: AvailableBackends;
+  short: string;
+};
+
+export const buildPkgInstallerMap = (packages: AvailablePackages[]): PkgInstallerMap => ({
   nextAuth: {
     inUse: packages.includes("nextAuth"),
     installer: nextAuthInstaller,
@@ -57,3 +64,26 @@ export const buildPkgInstallerMap = (
     installer: envVariablesInstaller,
   },
 });
+
+export const backendsDisplayList: BackendDisplay[] = [
+  {
+    name: "default (Next.js API Routes)",
+    value: "default",
+    short: "default",
+  },
+  {
+    name: "tRPC (front-to-back typsafe Next.js API Routes)",
+    value: "trpc",
+    short: "tRPC",
+  },
+  {
+    name: "FastAPI (Python web-framework -> great with data science)",
+    value: "fastapi",
+    short: "FastAPI",
+  },
+  // {
+  //   name: "Go - (high performance)",
+  //   value: "go",
+  //   short: "Go",
+  // },
+];
