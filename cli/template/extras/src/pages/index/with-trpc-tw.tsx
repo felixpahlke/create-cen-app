@@ -18,7 +18,7 @@ const Home: NextPage = () => {
           <div className="w-full max-w-3xl pt-10">
             <h1>MVP Starter</h1>
             <p>Let&apos;s Build!</p>
-            <p className="mt-10 text-2xl text-white">
+            <p className="mt-10 text-2xl">
               {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             </p>
           </div>

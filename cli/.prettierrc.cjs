@@ -1,10 +1,13 @@
-const baseConfig = require("../.prettierrc.cjs");
-
 /** @type {import('prettier').Config} */
 const config = {
-  ...baseConfig,
-  plugins: [...baseConfig.plugins, "prettier-plugin-tailwindcss"],
+  plugins: [
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports",
+  ],
+  tabWidth: 2,
+  trailingComma: "all",
   tailwindConfig: "./template/extras/config/tailwind.config.ts",
+  printWidth: 100,
 };
 
 module.exports = config;
