@@ -1,5 +1,5 @@
 <div align="center">
-<img src="./resources/bee.png">
+<img src="https://raw.githubusercontent.com/felixpahlke/create-cen-app/main/resources/bee.png">
 </div>
 
 <h1 align="center">
