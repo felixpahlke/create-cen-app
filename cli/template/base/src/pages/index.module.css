@@ -1,12 +1,19 @@
-.centering-container {
+.centeringContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
 }
 
-.inner-container {
+.innerContainer {
     padding-top: 2.5rem;
     width: 100%;
     max-width: 48rem;
+}
+
+.shocaseText {
+    margin-top: 2.5rem;
+    color: #ffffff;
+    font-size: 1.5rem;
+    line-height: 2rem;
 }

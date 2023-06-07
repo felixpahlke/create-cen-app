@@ -11,8 +11,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className={styles["centering-container"]}>
-          <div className={styles["inner-container"]}>
+        <div className={styles.centeringContainer}>
+          <div className={styles.innerContainer}>
             <h1>[project-name]</h1>
             <p>Let&apos;s Build!</p>
           </div>
