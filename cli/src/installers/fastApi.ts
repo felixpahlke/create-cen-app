@@ -15,6 +15,11 @@ export const fastApiInstaller = async ({ backendDir, noInstall }: BackendInstall
   // copy the template to separate folder
   fs.copySync(srcDir, destDir);
 
+  // create .env file
+  const envDest = path.join(backendDir, ".env");
+  const envContent = `EXAMPLE=XXXX`;
+  fs.writeFileSync(envDest, envContent, "utf-8");
+
   if (noInstall) {
     logger.info("Skipping FastAPI environment setup");
     return;

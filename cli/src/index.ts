@@ -40,7 +40,7 @@ const main = async () => {
   // e.g. dir/@mono/app returns ["@mono/app", "dir/app"]
   const [scopedAppName, appDir] = parseNameAndPath(appName);
 
-  const { projectDir, frontendDir } = await createProject({
+  const { projectDir, frontendDir, backendDir } = await createProject({
     projectName: appDir,
     packages: usePackages,
     backend,
@@ -78,7 +78,7 @@ const main = async () => {
     await initializeGit(projectDir);
   }
 
-  logNextSteps({ projectName: appDir, packages: usePackages, noInstall });
+  logNextSteps({ projectName: appDir, packages: usePackages, noInstall, frontendDir, backendDir });
 
   process.exit(0);
 };

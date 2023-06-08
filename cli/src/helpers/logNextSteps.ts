@@ -7,6 +7,8 @@ import { logger } from "~/utils/logger.js";
 
 interface LogNextStepsProps {
   projectName?: string;
+  frontendDir?: string;
+  backendDir?: string;
   packages?: InstallerOptions["packages"];
   backend?: AvailableBackends;
   noInstall?: boolean;
@@ -18,6 +20,7 @@ export const logNextSteps = ({
   projectName = DEFAULT_APP_NAME,
   packages,
   backend,
+  frontendDir,
   noInstall,
   noVenv,
 }: LogNextStepsProps) => {
@@ -36,8 +39,8 @@ export const logNextSteps = ({
       // logger.info(`  pip install -r requirements.txt`);
     } else {
       usingExternalBackend && logger.info(`  ${projectName}/backend/run`);
-      usingExternalBackend && logger.warn(`  (in another terminal:)`);
-      logger.info(`  cd ${projectName}/frontend`);
+      usingExternalBackend && logger.warn(`  (in another terminal window:)`);
+      logger.info(`  cd ${frontendDir}`);
     }
   }
 
