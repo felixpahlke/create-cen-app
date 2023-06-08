@@ -35,9 +35,9 @@ export const logNextSteps = ({
       // logger.info(`  source venv/bin/activate`);
       // logger.info(`  pip install -r requirements.txt`);
     } else {
-      usingExternalBackend && logger.info(`  ${projectName}-backend/run`);
+      usingExternalBackend && logger.info(`  ${projectName}/backend/run`);
       usingExternalBackend && logger.warn(`  (in another terminal:)`);
-      logger.info(`  cd ${projectName}-frontend`);
+      logger.info(`  cd ${projectName}/frontend`);
     }
   }
 

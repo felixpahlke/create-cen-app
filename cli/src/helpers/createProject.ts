@@ -37,8 +37,8 @@ export const createProject = async ({
   if (backend === "default" || backend === "trpc") {
     frontendDir = projectDir;
   } else {
-    frontendDir = path.resolve(projectDir, `${projectName}-frontend`);
-    backendDir = path.resolve(projectDir, `${projectName}-backend`);
+    frontendDir = path.resolve(projectDir, `frontend`);
+    backendDir = path.resolve(projectDir, `backend`);
   }
 
   // Bootstraps the base Next.js application

@@ -10,9 +10,6 @@ export const getUserPythonInfo = async (): Promise<PythonInfo> => {
   const pythonVersion = await checkPythonVersion();
   const python3Version = await checkPython3Version();
 
-  console.log("python:", pythonVersion);
-  console.log("python3:", python3Version);
-
   if (pythonVersion) {
     return { installed: true, alias: "python", version: pythonVersion };
   } else if (python3Version) {
@@ -29,7 +26,7 @@ async function checkPythonVersion(): Promise<string | null> {
     });
     return stdout.trim(); // Python version information
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return null; // Python not found
   }
 }
@@ -41,7 +38,7 @@ async function checkPython3Version(): Promise<string | null> {
     });
     return stdout.trim(); // Python 3 version information
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return null; // Python 3 not found
   }
 }
