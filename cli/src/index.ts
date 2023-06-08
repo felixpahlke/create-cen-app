@@ -64,7 +64,7 @@ const main = async () => {
 
   // update displayName in files
   if (displayName) {
-    replaceTextInFiles(projectDir, "\\[project-name\\]", displayName);
+    replaceTextInFiles(frontendDir, "\\[project-name\\]", displayName);
   }
 
   if (!noInstall) {
