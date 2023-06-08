@@ -195,7 +195,7 @@ export const runCli = async () => {
         cliResults.packages = [];
       }
 
-      cliResults.flags.importAlias = await promptImportAlias();
+      // cliResults.flags.importAlias = await promptImportAlias();
 
       cliResults.backend = await promptBackends();
 
@@ -336,20 +336,20 @@ const promptTailwind = async (): Promise<boolean> => {
   return tailwind;
 };
 
-const promptImportAlias = async (): Promise<string> => {
-  const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
-    name: "importAlias",
-    type: "input",
-    message: "What import alias inside Next.js would you like configured?",
-    default: defaultOptions.flags.importAlias,
-    validate: validateImportAlias,
-    transformer: (input: string) => {
-      return input.trim();
-    },
-  });
+// const promptImportAlias = async (): Promise<string> => {
+//   const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
+//     name: "importAlias",
+//     type: "input",
+//     message: "What import alias inside Next.js would you like configured?",
+//     default: defaultOptions.flags.importAlias,
+//     validate: validateImportAlias,
+//     transformer: (input: string) => {
+//       return input.trim();
+//     },
+//   });
 
-  return importAlias;
-};
+//   return importAlias;
+// };
 
 const promptBackends = async (): Promise<AvailableBackends> => {
   const { backend } = await inquirer.prompt<{ backend: AvailableBackends }>({
