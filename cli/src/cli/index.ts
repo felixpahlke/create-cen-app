@@ -18,6 +18,7 @@ import { validateImportAlias } from "~/utils/validateImportAlias.js";
 interface CliFlags {
   noGit: boolean;
   noInstall: boolean;
+  noVenv: boolean;
   default: boolean;
   importAlias: string;
 
@@ -49,6 +50,7 @@ const defaultOptions: CliResults = {
   flags: {
     noGit: false,
     noInstall: false,
+    noVenv: false,
     default: false,
     CI: false,
     tailwind: false,
@@ -193,6 +195,8 @@ export const runCli = async () => {
         cliResults.packages = [];
       }
 
+      cliResults.flags.importAlias = await promptImportAlias();
+
       cliResults.backend = await promptBackends();
 
       if (cliResults.backend === "trpc") {
@@ -202,15 +206,19 @@ export const runCli = async () => {
       // TODO: add more supported packages
       // cliResults.packages = await promptPackages();
 
-      if (!cliResults.flags.noGit) {
-        cliResults.flags.noGit = !(await promptGit());
-      }
-
       if (!cliResults.flags.noInstall) {
         cliResults.flags.noInstall = !(await promptInstall());
       }
 
-      cliResults.flags.importAlias = await promptImportAlias();
+      if (cliResults.backend === "fastapi") {
+        if (!cliResults.flags.noVenv) {
+          cliResults.flags.noVenv = !(await promptSetupVenv());
+        }
+      }
+
+      if (!cliResults.flags.noGit) {
+        cliResults.flags.noGit = !(await promptGit());
+      }
     }
   } catch (err) {
     // If the user is not calling create-cen-app from an interactive terminal, inquirer will throw an error with isTTYError = true
@@ -328,6 +336,21 @@ const promptTailwind = async (): Promise<boolean> => {
   return tailwind;
 };
 
+const promptImportAlias = async (): Promise<string> => {
+  const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
+    name: "importAlias",
+    type: "input",
+    message: "What import alias inside Next.js would you like configured?",
+    default: defaultOptions.flags.importAlias,
+    validate: validateImportAlias,
+    transformer: (input: string) => {
+      return input.trim();
+    },
+  });
+
+  return importAlias;
+};
+
 const promptBackends = async (): Promise<AvailableBackends> => {
   const { backend } = await inquirer.prompt<{ backend: AvailableBackends }>({
     name: "backend",
@@ -340,23 +363,7 @@ const promptBackends = async (): Promise<AvailableBackends> => {
   return backend;
 };
 
-const promptGit = async (): Promise<boolean> => {
-  const { git } = await inquirer.prompt<{ git: boolean }>({
-    name: "git",
-    type: "confirm",
-    message: "Initialize a new git repository?",
-    default: true,
-  });
-
-  if (git) {
-    logger.success("Nice one! Initializing repository!");
-  } else {
-    logger.info("Sounds good! You can come back and run git init later.");
-  }
-
-  return git;
-};
-
+// asks if frontend dependencies should be installed
 const promptInstall = async (): Promise<boolean> => {
   const pkgManager = getUserPkgManager();
 
@@ -383,17 +390,37 @@ const promptInstall = async (): Promise<boolean> => {
   return install;
 };
 
-const promptImportAlias = async (): Promise<string> => {
-  const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
-    name: "importAlias",
-    type: "input",
-    message: "What import alias would you like configured?",
-    default: defaultOptions.flags.importAlias,
-    validate: validateImportAlias,
-    transformer: (input: string) => {
-      return input.trim();
-    },
+// only for FastAPI
+const promptSetupVenv = async (): Promise<boolean> => {
+  const { install: setupVenv } = await inquirer.prompt<{ install: boolean }>({
+    name: "install",
+    type: "confirm",
+    message: `Would you like us to setup 'venv' for you (including requirements)?`,
+    default: true,
   });
 
-  return importAlias;
+  if (setupVenv) {
+    logger.success("Alright. We'll setup your virtual environment!");
+  } else {
+    logger.info(`No worries. You can setup your venv later.`);
+  }
+
+  return setupVenv;
+};
+
+const promptGit = async (): Promise<boolean> => {
+  const { git } = await inquirer.prompt<{ git: boolean }>({
+    name: "git",
+    type: "confirm",
+    message: "Initialize a new git repository?",
+    default: true,
+  });
+
+  if (git) {
+    logger.success("Nice one! Initializing repository!");
+  } else {
+    logger.info("Sounds good! You can come back and run git init later.");
+  }
+
+  return git;
 };

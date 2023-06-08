@@ -3,9 +3,9 @@ import path from "path";
 import { PKG_ROOT } from "~/consts.js";
 import { type InstallerOptions } from "~/installers/index.js";
 
-type SelectBoilerplateProps = Required<Pick<InstallerOptions, "projectDir" | "packages">>;
+type SelectBoilerplateProps = Required<Pick<InstallerOptions, "frontendDir" | "packages">>;
 // This generates the _app.tsx file that is used to render the app
-export const selectAppFile = ({ projectDir, packages }: SelectBoilerplateProps) => {
+export const selectAppFile = ({ frontendDir, packages }: SelectBoilerplateProps) => {
   const appFileDir = path.join(PKG_ROOT, "template/extras/src/pages/_app");
 
   const usingTRPC = packages.trpc.inUse;
@@ -22,13 +22,13 @@ export const selectAppFile = ({ projectDir, packages }: SelectBoilerplateProps) 
 
   if (appFile !== "") {
     const appSrc = path.join(appFileDir, appFile);
-    const appDest = path.join(projectDir, "src/pages/_app.tsx");
+    const appDest = path.join(frontendDir, "src/pages/_app.tsx");
     fs.copySync(appSrc, appDest);
   }
 };
 
 // This selects the proper index.tsx to be used that showcases the chosen tech
-export const selectIndexFile = ({ projectDir, packages }: SelectBoilerplateProps) => {
+export const selectIndexFile = ({ frontendDir, packages }: SelectBoilerplateProps) => {
   const indexFileDir = path.join(PKG_ROOT, "template/extras/src/pages/index");
 
   const usingTRPC = packages.trpc.inUse;
@@ -50,7 +50,7 @@ export const selectIndexFile = ({ projectDir, packages }: SelectBoilerplateProps
 
   if (indexFile !== "") {
     const indexSrc = path.join(indexFileDir, indexFile);
-    const indexDest = path.join(projectDir, "src/pages/index.tsx");
+    const indexDest = path.join(frontendDir, "src/pages/index.tsx");
     fs.copySync(indexSrc, indexDest);
   }
 };

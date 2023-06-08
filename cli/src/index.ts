@@ -32,7 +32,7 @@ const main = async () => {
     packages,
     displayName,
     backend,
-    flags: { noGit, noInstall, importAlias },
+    flags: { noGit, noInstall, importAlias, noVenv },
   } = await runCli();
 
   const usePackages = buildPkgInstallerMap(packages);
@@ -40,25 +40,26 @@ const main = async () => {
   // e.g. dir/@mono/app returns ["@mono/app", "dir/app"]
   const [scopedAppName, appDir] = parseNameAndPath(appName);
 
-  const projectDir = await createProject({
+  const { projectDir, frontendDir } = await createProject({
     projectName: appDir,
     packages: usePackages,
     backend,
     importAlias: importAlias,
     noInstall,
+    noVenv,
   });
 
   // Write name to package.json
-  const pkgJson = fs.readJSONSync(path.join(projectDir, "package.json")) as CT3APackageJSON;
+  const pkgJson = fs.readJSONSync(path.join(frontendDir, "package.json")) as CT3APackageJSON;
   pkgJson.name = scopedAppName;
   pkgJson.ct3aMetadata = { initVersion: getVersion() };
-  fs.writeJSONSync(path.join(projectDir, "package.json"), pkgJson, {
+  fs.writeJSONSync(path.join(frontendDir, "package.json"), pkgJson, {
     spaces: 2,
   });
 
   // update import alias in any generated files if not using the default
   if (importAlias !== "~/") {
-    setImportAlias(projectDir, importAlias);
+    setImportAlias(frontendDir, importAlias);
   }
 
   // update displayName in files
@@ -67,11 +68,11 @@ const main = async () => {
   }
 
   if (!noInstall) {
-    await installDependencies({ projectDir });
+    await installDependencies({ frontendDir });
   }
 
   // Rename _eslintrc.json to .eslintrc.json - we use _eslintrc.json to avoid conflicts with the monorepos linter
-  fs.renameSync(path.join(projectDir, "_eslintrc.cjs"), path.join(projectDir, ".eslintrc.cjs"));
+  fs.renameSync(path.join(frontendDir, "_eslintrc.cjs"), path.join(frontendDir, ".eslintrc.cjs"));
 
   if (!noGit) {
     await initializeGit(projectDir);

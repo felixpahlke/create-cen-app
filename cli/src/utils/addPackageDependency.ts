@@ -10,13 +10,11 @@ import {
 export const addPackageDependency = (opts: {
   dependencies: AvailableDependencies[];
   devMode: boolean;
-  projectDir: string;
+  frontendDir: string;
 }) => {
-  const { dependencies, devMode, projectDir } = opts;
+  const { dependencies, devMode, frontendDir } = opts;
 
-  const pkgJson = fs.readJSONSync(
-    path.join(projectDir, "package.json"),
-  ) as PackageJson;
+  const pkgJson = fs.readJSONSync(path.join(frontendDir, "package.json")) as PackageJson;
 
   dependencies.forEach((pkgName) => {
     const version = dependencyVersionMap[pkgName];
@@ -29,7 +27,7 @@ export const addPackageDependency = (opts: {
   });
   const sortedPkgJson = sortPackageJson(pkgJson);
 
-  fs.writeJSONSync(path.join(projectDir, "package.json"), sortedPkgJson, {
+  fs.writeJSONSync(path.join(frontendDir, "package.json"), sortedPkgJson, {
     spaces: 2,
   });
 };

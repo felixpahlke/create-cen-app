@@ -4,9 +4,9 @@ import { PKG_ROOT } from "~/consts.js";
 import { type Installer } from "~/installers/index.js";
 import { addPackageDependency } from "~/utils/addPackageDependency.js";
 
-export const trpcInstaller: Installer = ({ projectDir, packages }) => {
+export const trpcInstaller: Installer = ({ frontendDir, packages }) => {
   addPackageDependency({
-    projectDir,
+    frontendDir,
     dependencies: [
       "@tanstack/react-query",
       "superjson",
@@ -24,10 +24,10 @@ export const trpcInstaller: Installer = ({ projectDir, packages }) => {
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
   const apiHandlerSrc = path.join(extrasDir, "src/pages/api/trpc/[trpc].ts");
-  const apiHandlerDest = path.join(projectDir, "src/pages/api/trpc/[trpc].ts");
+  const apiHandlerDest = path.join(frontendDir, "src/pages/api/trpc/[trpc].ts");
 
   const utilsSrc = path.join(extrasDir, "src/utils/api.ts");
-  const utilsDest = path.join(projectDir, "src/utils/api.ts");
+  const utilsDest = path.join(frontendDir, "src/utils/api.ts");
 
   const trpcFile =
     usingAuth && usingPrisma
@@ -38,13 +38,13 @@ export const trpcInstaller: Installer = ({ projectDir, packages }) => {
       ? "with-prisma.ts"
       : "base.ts";
   const trpcSrc = path.join(extrasDir, "src/server/api/trpc", trpcFile);
-  const trpcDest = path.join(projectDir, "src/server/api/trpc.ts");
+  const trpcDest = path.join(frontendDir, "src/server/api/trpc.ts");
 
   const rootRouterSrc = path.join(extrasDir, "src/server/api/root.ts");
-  const rootRouterDest = path.join(projectDir, "src/server/api/root.ts");
+  const rootRouterDest = path.join(frontendDir, "src/server/api/root.ts");
 
   const nextConfigSrc = path.join(extrasDir, "config/with-trpc.next.config.mjs");
-  const nextConfigDest = path.join(projectDir, "next.config.mjs");
+  const nextConfigDest = path.join(frontendDir, "next.config.mjs");
 
   const exampleRouterFile =
     usingAuth && usingPrisma
@@ -60,7 +60,7 @@ export const trpcInstaller: Installer = ({ projectDir, packages }) => {
     "src/server/api/routers/example",
     exampleRouterFile,
   );
-  const exampleRouterDest = path.join(projectDir, "src/server/api/routers/example.ts");
+  const exampleRouterDest = path.join(frontendDir, "src/server/api/routers/example.ts");
 
   fs.copySync(apiHandlerSrc, apiHandlerDest);
   fs.copySync(utilsSrc, utilsDest);

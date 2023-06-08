@@ -3,7 +3,7 @@ import path from "path";
 import { PKG_ROOT } from "~/consts.js";
 import { type Installer } from "~/installers/index.js";
 
-export const envVariablesInstaller: Installer = ({ projectDir, packages }) => {
+export const envVariablesInstaller: Installer = ({ frontendDir, packages }) => {
   const usingAuth = packages?.nextAuth.inUse;
   const usingPrisma = packages?.prisma.inUse;
 
@@ -19,17 +19,13 @@ export const envVariablesInstaller: Installer = ({ projectDir, packages }) => {
       : "";
 
   if (envFile !== "") {
-    const envSchemaSrc = path.join(
-      PKG_ROOT,
-      "template/extras/src/env",
-      envFile,
-    );
-    const envSchemaDest = path.join(projectDir, "src/env.mjs");
+    const envSchemaSrc = path.join(PKG_ROOT, "template/extras/src/env", envFile);
+    const envSchemaDest = path.join(frontendDir, "src/env.mjs");
     fs.copySync(envSchemaSrc, envSchemaDest);
   }
 
-  const envDest = path.join(projectDir, ".env");
-  const envExampleDest = path.join(projectDir, ".env.example");
+  const envDest = path.join(frontendDir, ".env");
+  const envExampleDest = path.join(frontendDir, ".env.example");
 
   fs.writeFileSync(envDest, envContent, "utf-8");
   fs.writeFileSync(envExampleDest, exampleEnvContent + envContent, "utf-8");

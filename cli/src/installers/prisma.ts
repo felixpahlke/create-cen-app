@@ -5,14 +5,14 @@ import { PKG_ROOT } from "~/consts.js";
 import { type Installer } from "~/installers/index.js";
 import { addPackageDependency } from "~/utils/addPackageDependency.js";
 
-export const prismaInstaller: Installer = ({ projectDir, packages }) => {
+export const prismaInstaller: Installer = ({ frontendDir, packages }) => {
   addPackageDependency({
-    projectDir,
+    frontendDir,
     dependencies: ["prisma"],
     devMode: true,
   });
   addPackageDependency({
-    projectDir,
+    frontendDir,
     dependencies: ["@prisma/client"],
     devMode: false,
   });
@@ -24,13 +24,13 @@ export const prismaInstaller: Installer = ({ projectDir, packages }) => {
     "prisma/schema",
     packages?.nextAuth.inUse ? "with-auth.prisma" : "base.prisma",
   );
-  const schemaDest = path.join(projectDir, "prisma/schema.prisma");
+  const schemaDest = path.join(frontendDir, "prisma/schema.prisma");
 
   const clientSrc = path.join(extrasDir, "src/server/db.ts");
-  const clientDest = path.join(projectDir, "src/server/db.ts");
+  const clientDest = path.join(frontendDir, "src/server/db.ts");
 
   // add postinstall script to package.json
-  const packageJsonPath = path.join(projectDir, "package.json");
+  const packageJsonPath = path.join(frontendDir, "package.json");
 
   const packageJsonContent = fs.readJSONSync(packageJsonPath) as PackageJson;
   packageJsonContent.scripts = {

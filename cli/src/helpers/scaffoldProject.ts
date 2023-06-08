@@ -7,13 +7,18 @@ import { PKG_ROOT } from "~/consts.js";
 import { type InstallerOptions } from "~/installers/index.js";
 import { logger } from "~/utils/logger.js";
 
+type ScaffoldProjectProps = InstallerOptions & {
+  projectDir: string;
+};
+
 // This bootstraps the base Next.js application
 export const scaffoldProject = async ({
   projectName,
   projectDir,
+  frontendDir,
   pkgManager,
   noInstall,
-}: InstallerOptions) => {
+}: ScaffoldProjectProps) => {
   const srcDir = path.join(PKG_ROOT, "template/base");
 
   if (!noInstall) {
@@ -27,11 +32,7 @@ export const scaffoldProject = async ({
   if (fs.existsSync(projectDir)) {
     if (fs.readdirSync(projectDir).length === 0) {
       if (projectName !== ".")
-        spinner.info(
-          `${chalk.cyan.bold(
-            projectName,
-          )} exists but is empty, continuing...\n`,
-        );
+        spinner.info(`${chalk.cyan.bold(projectName)} exists but is empty, continuing...\n`);
     } else {
       spinner.stopAndPersist();
       const { overwriteDir } = await inquirer.prompt<{
@@ -67,9 +68,7 @@ export const scaffoldProject = async ({
       }
 
       const overwriteAction =
-        overwriteDir === "clear"
-          ? "clear the directory"
-          : "overwrite conflicting files";
+        overwriteDir === "clear" ? "clear the directory" : "overwrite conflicting files";
 
       const { confirmOverwriteDir } = await inquirer.prompt<{
         confirmOverwriteDir: boolean;
@@ -86,9 +85,7 @@ export const scaffoldProject = async ({
       }
 
       if (overwriteDir === "clear") {
-        spinner.info(
-          `Emptying ${chalk.cyan.bold(projectName)} and creating CEN app..\n`,
-        );
+        spinner.info(`Emptying ${chalk.cyan.bold(projectName)} and creating CEN app..\n`);
         fs.emptyDirSync(projectDir);
       }
     }
@@ -96,16 +93,11 @@ export const scaffoldProject = async ({
 
   spinner.start();
 
-  fs.copySync(srcDir, projectDir);
-  fs.renameSync(
-    path.join(projectDir, "_gitignore"),
-    path.join(projectDir, ".gitignore"),
-  );
+  // now copying frontend files
+  fs.copySync(srcDir, frontendDir);
+  fs.renameSync(path.join(frontendDir, "_gitignore"), path.join(frontendDir, ".gitignore"));
 
-  const scaffoldedName =
-    projectName === "." ? "App" : chalk.cyan.bold(projectName);
+  const scaffoldedName = projectName === "." ? "App" : chalk.cyan.bold(projectName);
 
-  spinner.succeed(
-    `${scaffoldedName} ${chalk.green("scaffolded successfully!")}\n`,
-  );
+  spinner.succeed(`${scaffoldedName} ${chalk.green("scaffolded successfully!")}\n`);
 };

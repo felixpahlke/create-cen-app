@@ -20,7 +20,7 @@ export const availableBackends = ["default", "trpc", "fastapi", "go"] as const;
 export type AvailableBackends = (typeof availableBackends)[number];
 
 export interface InstallerOptions {
-  projectDir: string;
+  frontendDir: string;
   pkgManager: PackageManager;
   noInstall: boolean;
   packages?: PkgInstallerMap;
@@ -28,6 +28,11 @@ export interface InstallerOptions {
 }
 
 export type Installer = (opts: InstallerOptions) => void;
+
+export interface BackendInstallerOptions {
+  backendDir: string;
+  noInstall: boolean;
+}
 
 export type PkgInstallerMap = {
   [pkg in AvailablePackages]: {

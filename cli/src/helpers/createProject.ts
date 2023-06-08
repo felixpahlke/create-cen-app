@@ -12,21 +12,39 @@ interface CreateProjectOptions {
   packages: PkgInstallerMap;
   backend: AvailableBackends;
   noInstall: boolean;
+  noVenv: boolean;
   importAlias: string;
 }
+
+type Directories = {
+  frontendDir: string;
+  backendDir: string;
+  projectDir: string;
+};
 
 export const createProject = async ({
   projectName,
   packages,
   backend,
   noInstall,
+  noVenv,
 }: CreateProjectOptions) => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
 
+  let frontendDir = "";
+  let backendDir = "";
+  if (backend === "default" || backend === "trpc") {
+    frontendDir = projectDir;
+  } else {
+    frontendDir = path.resolve(projectDir, `${projectName}-frontend`);
+    backendDir = path.resolve(projectDir, `${projectName}-backend`);
+  }
+
   // Bootstraps the base Next.js application
   await scaffoldProject({
     projectName,
+    frontendDir,
     projectDir,
     pkgManager,
     noInstall,
@@ -34,15 +52,15 @@ export const createProject = async ({
 
   // Install the selected packages
   installPackages({
-    projectDir,
+    frontendDir,
     pkgManager,
     packages,
     noInstall,
   });
 
   // TODO: Look into using handlebars or other templating engine to scaffold without needing to maintain multiple copies of the same file
-  selectAppFile({ projectDir, packages });
-  selectIndexFile({ projectDir, packages });
+  selectAppFile({ frontendDir, packages });
+  selectIndexFile({ frontendDir, packages });
 
   // remove tailwind css import if not using tailwind
   if (!packages.tailwind.inUse) {
@@ -51,8 +69,8 @@ export const createProject = async ({
 
   // install backend
   if (backend === "fastapi") {
-    await fastApiInstaller();
+    await fastApiInstaller({ backendDir, noInstall: noVenv });
   }
 
-  return projectDir;
+  return { frontendDir, backendDir, projectDir } as Directories;
 };

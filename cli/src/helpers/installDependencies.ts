@@ -1,26 +1,23 @@
 import chalk from "chalk";
 import { execa } from "execa";
 import ora, { type Ora } from "ora";
-import {
-  getUserPkgManager,
-  type PackageManager,
-} from "~/utils/getUserPkgManager.js";
+import { getUserPkgManager, type PackageManager } from "~/utils/getUserPkgManager.js";
 import { logger } from "~/utils/logger.js";
 
 type Options = {
-  projectDir: string;
+  frontendDir: string;
 };
 
 /*eslint-disable @typescript-eslint/no-floating-promises*/
 const runInstallCommand = async (
   pkgManager: PackageManager,
-  projectDir: string,
+  frontendDir: string,
 ): Promise<Ora | null> => {
   switch (pkgManager) {
     // When using npm, inherit the stderr stream so that the progress bar is shown
     case "npm":
       await execa(pkgManager, ["install"], {
-        cwd: projectDir,
+        cwd: frontendDir,
         stderr: "inherit",
       });
 
@@ -29,7 +26,7 @@ const runInstallCommand = async (
     case "pnpm":
       const pnpmSpinner = ora("Running pnpm install...").start();
       const pnpmSubprocess = execa(pkgManager, ["install"], {
-        cwd: projectDir,
+        cwd: frontendDir,
         stdout: "pipe",
       });
 
@@ -38,9 +35,7 @@ const runInstallCommand = async (
           const text = data.toString();
 
           if (text.includes("Progress")) {
-            pnpmSpinner.text = text.includes("|")
-              ? text.split(" | ")[1] ?? ""
-              : text;
+            pnpmSpinner.text = text.includes("|") ? text.split(" | ")[1] ?? "" : text;
           }
         });
         pnpmSubprocess.on("error", (e) => rej(e));
@@ -51,7 +46,7 @@ const runInstallCommand = async (
     case "yarn":
       const yarnSpinner = ora("Running yarn...").start();
       const yarnSubprocess = execa(pkgManager, [], {
-        cwd: projectDir,
+        cwd: frontendDir,
         stdout: "pipe",
       });
 
@@ -68,15 +63,13 @@ const runInstallCommand = async (
 };
 /*eslint-enable @typescript-eslint/no-floating-promises*/
 
-export const installDependencies = async ({ projectDir }: Options) => {
-  logger.info("Installing dependencies...");
+export const installDependencies = async ({ frontendDir }: Options) => {
+  logger.info("Installing frontend dependencies...");
   const pkgManager = getUserPkgManager();
 
-  const installSpinner = await runInstallCommand(pkgManager, projectDir);
+  const installSpinner = await runInstallCommand(pkgManager, frontendDir);
 
   // If the spinner was used to show the progress, use succeed method on it
   // If not, use the succeed on a new spinner
-  (installSpinner || ora()).succeed(
-    chalk.green("Successfully installed dependencies!\n"),
-  );
+  (installSpinner || ora()).succeed(chalk.green("Successfully installed dependencies!\n"));
 };
