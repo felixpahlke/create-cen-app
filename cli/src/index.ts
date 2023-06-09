@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { installDependencies } from "./helpers/installDependencies.js";
+import { addPackageDependency } from "./utils/addPackageDependency.js";
 import { getVersion } from "./utils/getCENVersion.js";
 import { getNpmVersion, renderVersionWarning } from "./utils/renderVersionWarning.js";
 import replaceTextInFiles from "./utils/replaceTextInFiles.js";
@@ -69,6 +70,15 @@ const main = async () => {
     replaceTextInFiles(frontendDir, "\\[project-name\\]", displayName);
   }
 
+  // add react-query if using external backend
+  if (backend !== "default" && backend !== "trpc") {
+    addPackageDependency({
+      frontendDir,
+      dependencies: ["react-query"],
+      devMode: false,
+    });
+  }
+
   if (!noInstall) {
     await installDependencies({ frontendDir });
   }
@@ -80,7 +90,14 @@ const main = async () => {
     await initializeGit(projectDir);
   }
 
-  logNextSteps({ projectName: appDir, packages: usePackages, noInstall, frontendDir, backendDir });
+  logNextSteps({
+    projectName: appDir,
+    packages: usePackages,
+    noInstall,
+    frontendDir,
+    backendDir,
+    backend,
+  });
 
   process.exit(0);
 };
