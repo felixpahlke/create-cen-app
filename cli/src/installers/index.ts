@@ -72,7 +72,7 @@ export const buildPkgInstallerMap = (packages: AvailablePackages[]): PkgInstalle
 
 export const backendsDisplayList: BackendDisplay[] = [
   {
-    name: "default (Next.js API Routes)",
+    name: '"no Backend" (default Next.js API Routes)',
     value: "default",
     short: "default",
   },
