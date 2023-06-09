@@ -23,6 +23,7 @@ export const fastApiInstaller = async ({
 
   // copy the template to separate folder
   fs.copySync(srcDir, destDir);
+  fs.renameSync(path.join(destDir, "_gitignore"), path.join(destDir, ".gitignore"));
 
   // create .env file
   const envDest = path.join(backendDir, ".env");
