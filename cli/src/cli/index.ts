@@ -11,6 +11,7 @@ import {
 } from "~/installers/index.js";
 import { getVersion } from "~/utils/getCENVersion.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
+import { PythonVersion, getUserPythonVersions } from "~/utils/getUserPythonVersion.js";
 import { logger } from "~/utils/logger.js";
 import { validateAppName } from "~/utils/validateAppName.js";
 import { validateImportAlias } from "~/utils/validateImportAlias.js";
@@ -39,6 +40,7 @@ interface CliResults {
   displayName: string;
   packages: AvailablePackages[];
   backend: AvailableBackends;
+  pythonVersion: PythonVersion;
   flags: CliFlags;
 }
 
@@ -47,6 +49,7 @@ const defaultOptions: CliResults = {
   displayName: DEFAULT_DISPLAY_NAME,
   packages: ["nextAuth", "prisma", "tailwind", "trpc"],
   backend: "default",
+  pythonVersion: { path: "/usr/bin/python3", owner: "system" },
   flags: {
     noGit: false,
     noInstall: false,
@@ -213,6 +216,21 @@ export const runCli = async () => {
       if (cliResults.backend === "fastapi") {
         if (!cliResults.flags.noVenv) {
           cliResults.flags.noVenv = !(await promptSetupVenv());
+          if (!cliResults.flags.noVenv) {
+            const pythonVersions = await getUserPythonVersions();
+
+            // TODO: Maybe give user option to select python version?
+            if (!pythonVersions) {
+              logger.warn(
+                "We couldn't find any python versions on your system (Maybe we just don't support your OS yet)",
+              );
+              cliResults.flags.noVenv = true;
+            } else {
+              logger.success(
+                `Any time! We'll use ${pythonVersions[0]?.version} on path: ${pythonVersions[0]?.path}`,
+              );
+            }
+          }
         }
       }
 
@@ -395,15 +413,11 @@ const promptSetupVenv = async (): Promise<boolean> => {
   const { install: setupVenv } = await inquirer.prompt<{ install: boolean }>({
     name: "install",
     type: "confirm",
-    message: `Would you like us to setup 'venv' for you (including requirements)?`,
+    message: `Would you like us to setup 'venv' for you (including requirements)? ${chalk.yellow(
+      " experimental",
+    )}`,
     default: true,
   });
-
-  if (setupVenv) {
-    logger.success("Alright. We'll setup your virtual environment!");
-  } else {
-    logger.info(`No worries. You can setup your venv later.`);
-  }
 
   return setupVenv;
 };

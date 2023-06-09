@@ -32,6 +32,7 @@ const main = async () => {
     packages,
     displayName,
     backend,
+    pythonVersion,
     flags: { noGit, noInstall, importAlias, noVenv },
   } = await runCli();
 
@@ -44,6 +45,7 @@ const main = async () => {
     projectName: appDir,
     packages: usePackages,
     backend,
+    pythonVersion,
     importAlias: importAlias,
     noInstall,
     noVenv,

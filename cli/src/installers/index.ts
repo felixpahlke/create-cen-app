@@ -29,10 +29,10 @@ export interface InstallerOptions {
 
 export type Installer = (opts: InstallerOptions) => void;
 
-export interface BackendInstallerOptions {
-  backendDir: string;
-  noInstall: boolean;
-}
+// export interface BackendInstallerOptions {
+//   backendDir: string;
+//   noInstall: boolean;
+// }
 
 export type PkgInstallerMap = {
   [pkg in AvailablePackages]: {

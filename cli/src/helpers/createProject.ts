@@ -5,12 +5,14 @@ import { selectAppFile, selectIndexFile } from "~/helpers/selectBoilerplate.js";
 import { fastApiInstaller } from "~/installers/fastApi.js";
 import { AvailableBackends, type PkgInstallerMap } from "~/installers/index.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
+import { PythonVersion } from "~/utils/getUserPythonVersion.js";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
 
 interface CreateProjectOptions {
   projectName: string;
   packages: PkgInstallerMap;
   backend: AvailableBackends;
+  pythonVersion: PythonVersion;
   noInstall: boolean;
   noVenv: boolean;
   importAlias: string;
@@ -26,6 +28,7 @@ export const createProject = async ({
   projectName,
   packages,
   backend,
+  pythonVersion,
   noInstall,
   noVenv,
 }: CreateProjectOptions) => {
@@ -69,7 +72,7 @@ export const createProject = async ({
 
   // install backend
   if (backend === "fastapi") {
-    await fastApiInstaller({ backendDir, noInstall: noVenv });
+    await fastApiInstaller({ backendDir, noVenv, pythonVersion });
   }
 
   return { frontendDir, backendDir, projectDir } as Directories;

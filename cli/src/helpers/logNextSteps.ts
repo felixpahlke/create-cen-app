@@ -28,7 +28,7 @@ export const logNextSteps = ({
 
   const usingExternalBackend = backend !== "default" && backend !== "trpc";
 
-  logger.info("Next steps:");
+  logger.info("Next steps:\n");
 
   if (usingExternalBackend) {
     if (noVenv) {
@@ -38,8 +38,9 @@ export const logNextSteps = ({
       // logger.info(`  source venv/bin/activate`);
       // logger.info(`  pip install -r requirements.txt`);
     } else {
-      usingExternalBackend && logger.info(`  ${projectName}/backend/run`);
-      usingExternalBackend && logger.warn(`  (in another terminal window:)`);
+      usingExternalBackend && logger.info(`  cd ${projectName}/backend`);
+      usingExternalBackend && logger.info(`  ./run\n`);
+      usingExternalBackend && logger.warn(`  (in another terminal window:)\n`);
       logger.info(`  cd ${frontendDir}`);
     }
   }
@@ -59,5 +60,5 @@ export const logNextSteps = ({
     logger.info(`  ${pkgManager === "npm" ? "npx" : pkgManager} prisma db push`);
   }
 
-  logger.info(`  ${pkgManager === "npm" ? "npm run" : pkgManager} dev`);
+  logger.info(`  ${pkgManager === "npm" ? "npm run" : pkgManager} dev\n`);
 };
