@@ -62,8 +62,8 @@ export const createProject = async ({
   });
 
   // TODO: Look into using handlebars or other templating engine to scaffold without needing to maintain multiple copies of the same file
-  selectAppFile({ frontendDir, packages });
-  selectIndexFile({ frontendDir, packages });
+  selectAppFile({ frontendDir, packages, backend });
+  selectIndexFile({ frontendDir, packages, backend });
 
   // remove tailwind css import if not using tailwind
   if (!packages.tailwind.inUse) {
