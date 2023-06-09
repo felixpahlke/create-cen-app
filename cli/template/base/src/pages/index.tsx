@@ -10,15 +10,10 @@ const Home: NextPage = () => {
         <meta name="description" content="MVP Starter" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div className={styles.centeringContainer}>
-          <div className={styles.innerContainer}>
-            <h1>
-              IBM - <strong>[project-name]</strong>
-            </h1>
-            <p>Let&apos;s Build!</p>
-          </div>
-        </div>
+      <main className={styles.container}>
+        <h1>
+          IBM - <strong>[project-name]</strong>
+        </h1>
       </main>
     </>
   );

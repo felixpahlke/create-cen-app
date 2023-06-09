@@ -1,15 +1,11 @@
-.centeringContainer {
+.container {
     display: flex;
+    padding-top: 2.5rem;
     flex-direction: column;
     align-items: center;
     width: 100%;
 }
 
-.innerContainer {
-    padding-top: 2.5rem;
-    width: 100%;
-    max-width: 48rem;
-}
 
 .showcaseText {
     margin-top: 2.5rem;
