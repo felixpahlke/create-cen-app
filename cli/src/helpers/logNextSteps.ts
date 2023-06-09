@@ -6,11 +6,11 @@ import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { logger } from "~/utils/logger.js";
 
 interface LogNextStepsProps {
-  projectName?: string;
+  projectName: string;
   frontendDir?: string;
   backendDir?: string;
   packages?: InstallerOptions["packages"];
-  backend?: AvailableBackends;
+  backend: AvailableBackends;
   noInstall?: boolean;
   noVenv?: boolean;
 }
