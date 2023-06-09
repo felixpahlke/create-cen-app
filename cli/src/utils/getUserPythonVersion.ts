@@ -33,6 +33,10 @@ export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> =
     const regex = /(?<=python3 is ).+/gm;
     const paths = text.match(regex) || [];
 
+    if (paths.length === 0) {
+      return null;
+    }
+
     // try get versions from each path
     let versions: PythonVersion[] = [];
     for (const path of paths) {
