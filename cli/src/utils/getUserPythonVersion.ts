@@ -68,7 +68,7 @@ export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> =
     // console.log(versions);
     return versions;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return null; // Python 3 not found
   }
 };
@@ -78,7 +78,7 @@ async function getPythonVersion(path: string): Promise<string | null> {
     const { stdout } = await execa(path, ["--version"]);
     return stdout.trim();
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return null; // Python not found
   }
 }
