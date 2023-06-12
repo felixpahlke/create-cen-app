@@ -389,8 +389,9 @@ const promptInstall = async (): Promise<boolean> => {
   const { install } = await inquirer.prompt<{ install: boolean }>({
     name: "install",
     type: "confirm",
-    message:
-      `Would you like us to run '${pkgManager}` + (pkgManager === "yarn" ? `'?` : ` install'?`),
+    message: `Would you like us to run ${chalk.magenta(
+      `'${pkgManager}` + (pkgManager === "yarn" ? `'?` : ` install'?`),
+    )}`,
     default: true,
   });
 
@@ -414,9 +415,9 @@ const promptSetupVenv = async (): Promise<boolean> => {
   const { install: setupVenv } = await inquirer.prompt<{ install: boolean }>({
     name: "install",
     type: "confirm",
-    message: `Would you like us to setup 'venv' for you (including requirements)? ${chalk.yellow(
-      " experimental",
-    )}`,
+    message: `Would you like us to setup your ${chalk.magenta(
+      "python environment",
+    )}? (venv - including requirements)? ${chalk.yellow(" experimental")}`,
     default: true,
   });
 
