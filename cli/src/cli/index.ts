@@ -220,12 +220,13 @@ export const runCli = async () => {
             const pythonVersions = await getUserPythonVersions();
 
             // TODO: Maybe give user option to select python version?
-            if (!pythonVersions) {
+            if (!pythonVersions || !pythonVersions[0]) {
               logger.warn(
                 "We couldn't find any python versions on your system (Maybe we just don't support your OS yet)",
               );
               cliResults.flags.noVenv = true;
             } else {
+              cliResults.pythonVersion = pythonVersions[0];
               logger.success(
                 `Any time! We'll use ${pythonVersions[0]?.version} on path: ${pythonVersions[0]?.path}`,
               );
