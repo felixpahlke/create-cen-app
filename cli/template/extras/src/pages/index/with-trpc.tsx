@@ -9,13 +9,13 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>IBM - [project-name]</title>
+        <title>CEN - [project-name]</title>
         <meta name="description" content="MVP Starter" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.container}>
         <h1>
-          IBM - <strong>[project-name]</strong>
+          CEN - <strong>[project-name]</strong>
         </h1>
         <p className={styles.showcaseText}>
           {hello.data ? hello.data.greeting : "Loading tRPC query..."}

@@ -11,8 +11,8 @@ export default function Header() {
   const [theme, setTheme] = useTheme();
 
   return (
-    <CarbonHeader aria-label="IBM [project-name]">
-      <HeaderName href="/" prefix="IBM">
+    <CarbonHeader aria-label="CEN [project-name]">
+      <HeaderName href="/" prefix="CEN">
         [project-name]
       </HeaderName>
       <HeaderGlobalBar>
