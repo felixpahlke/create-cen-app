@@ -6,13 +6,13 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>CEN - [project-name]</title>
+        <title>CEN - APP</title>
         <meta name="description" content="MVP Starter" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.container}>
         <h1>
-          CEN - <strong>[project-name]</strong>
+          CEN - <strong>APP</strong>
         </h1>
       </main>
     </>
