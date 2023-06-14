@@ -59,3 +59,29 @@ export const selectIndexFile = ({ frontendDir, packages, backend }: SelectBoiler
     fs.copySync(indexSrc, indexDest);
   }
 };
+
+export const selectCompontentsFiles = ({
+  frontendDir,
+  packages,
+  backend,
+}: SelectBoilerplateProps) => {
+  const componentsDir = path.join(PKG_ROOT, "template/extras/src/components");
+
+  const usingCarbon = packages.carbon.inUse;
+  const usingTw = packages.tailwind.inUse;
+
+  let componentsSubDir = "";
+  if (usingCarbon && usingTw) {
+    componentsSubDir = "with-tw-carbon";
+  } else if (usingCarbon && !usingTw) {
+    componentsSubDir = "with-carbon";
+  } else if (!usingCarbon && usingTw) {
+    componentsSubDir = "with-tw";
+  }
+
+  if (componentsSubDir !== "") {
+    const componentsSrc = path.join(componentsDir, componentsSubDir);
+    const componentsDest = path.join(frontendDir, "src/components");
+    fs.copySync(componentsSrc, componentsDest);
+  }
+};

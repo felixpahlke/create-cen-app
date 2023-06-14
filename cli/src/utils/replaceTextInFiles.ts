@@ -1,11 +1,8 @@
+import { escapeRegexChars } from "./escapeRegexChars.js";
 import fs from "fs";
 import path from "path";
 
-function replaceTextInFiles(
-  directoryPath: string,
-  search: string,
-  replacement: string,
-): void {
+function replaceTextInFiles(directoryPath: string, search: string, replacement: string): void {
   const files = fs.readdirSync(directoryPath);
 
   files.forEach((file) => {
@@ -14,7 +11,7 @@ function replaceTextInFiles(
       replaceTextInFiles(filePath, search, replacement);
     } else {
       const data = fs.readFileSync(filePath, "utf8");
-      const updatedData = data.replace(new RegExp(search, "g"), replacement);
+      const updatedData = data.replace(new RegExp(escapeRegexChars(search), "g"), replacement);
       fs.writeFileSync(filePath, updatedData, "utf8");
     }
   });

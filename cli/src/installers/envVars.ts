@@ -4,19 +4,20 @@ import { PKG_ROOT } from "~/consts.js";
 import { type Installer } from "~/installers/index.js";
 
 export const envVariablesInstaller: Installer = ({ frontendDir, packages }) => {
-  const usingAuth = packages?.nextAuth.inUse;
-  const usingPrisma = packages?.prisma.inUse;
+  // const usingAuth = packages?.nextAuth.inUse;
+  // const usingPrisma = packages?.prisma.inUse;
 
-  const envContent = getEnvContent(!!usingAuth, !!usingPrisma);
+  // const envContent = getEnvContent(!!usingAuth, !!usingPrisma);
+  const envContent = getEnvContent();
 
-  const envFile =
-    usingAuth && usingPrisma
-      ? "with-auth-prisma.mjs"
-      : usingAuth
-      ? "with-auth.mjs"
-      : usingPrisma
-      ? "with-prisma.mjs"
-      : "";
+  const envFile = "";
+  // usingAuth && usingPrisma
+  //   ? "with-auth-prisma.mjs"
+  //   : usingAuth
+  //   ? "with-auth.mjs"
+  //   : usingPrisma
+  //   ? "with-prisma.mjs"
+  //   : "";
 
   if (envFile !== "") {
     const envSchemaSrc = path.join(PKG_ROOT, "template/extras/src/env", envFile);
@@ -31,7 +32,8 @@ export const envVariablesInstaller: Installer = ({ frontendDir, packages }) => {
   fs.writeFileSync(envExampleDest, exampleEnvContent + envContent, "utf-8");
 };
 
-const getEnvContent = (usingAuth: boolean, usingPrisma: boolean) => {
+// const getEnvContent = (usingAuth: boolean, usingPrisma: boolean) => {
+const getEnvContent = () => {
   let content = `
 # When adding additional environment variables, the schema in "/src/env.mjs"
 # should be updated accordingly.
@@ -49,26 +51,26 @@ API_BASE_URL="http://127.0.0.1:4000"
     .trim()
     .concat("\n");
 
-  if (usingPrisma)
-    content += `
-# Prisma
-# https://www.prisma.io/docs/reference/database-reference/connection-urls#env
-DATABASE_URL="file:./db.sqlite"
-`;
+  //   if (usingPrisma)
+  //     content += `
+  // # Prisma
+  // # https://www.prisma.io/docs/reference/database-reference/connection-urls#env
+  // DATABASE_URL="file:./db.sqlite"
+  // `;
 
-  if (usingAuth)
-    content += `
-# Next Auth
-# You can generate a new secret on the command line with:
-# openssl rand -base64 32
-# https://next-auth.js.org/configuration/options#secret
-# NEXTAUTH_SECRET=""
-NEXTAUTH_URL="http://localhost:3000"
+  //   if (usingAuth)
+  //     content += `
+  // # Next Auth
+  // # You can generate a new secret on the command line with:
+  // # openssl rand -base64 32
+  // # https://next-auth.js.org/configuration/options#secret
+  // # NEXTAUTH_SECRET=""
+  // NEXTAUTH_URL="http://localhost:3000"
 
-# Next Auth Discord Provider
-DISCORD_CLIENT_ID=""
-DISCORD_CLIENT_SECRET=""
-`;
+  // # Next Auth Discord Provider
+  // DISCORD_CLIENT_ID=""
+  // DISCORD_CLIENT_SECRET=""
+  // `;
 
   return content;
 };

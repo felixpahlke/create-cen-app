@@ -1,3 +1,5 @@
+import { carbonInstaller } from "./carbon.js";
+import { recoilInstaller } from "./recoil.js";
 import { envVariablesInstaller } from "~/installers/envVars.js";
 import { nextAuthInstaller } from "~/installers/nextAuth.js";
 import { prismaInstaller } from "~/installers/prisma.js";
@@ -8,11 +10,13 @@ import { type PackageManager } from "~/utils/getUserPkgManager.js";
 // Turning this into a const allows the list to be iterated over for programatically creating prompt options
 // Should increase extensability in the future
 export const availablePackages = [
-  "nextAuth",
-  "prisma",
+  // "nextAuth",
+  // "prisma",
   "tailwind",
   "trpc",
   "envVariables",
+  "recoil",
+  "carbon",
 ] as const;
 export type AvailablePackages = (typeof availablePackages)[number];
 
@@ -48,14 +52,14 @@ export type BackendDisplay = {
 };
 
 export const buildPkgInstallerMap = (packages: AvailablePackages[]): PkgInstallerMap => ({
-  nextAuth: {
-    inUse: packages.includes("nextAuth"),
-    installer: nextAuthInstaller,
-  },
-  prisma: {
-    inUse: packages.includes("prisma"),
-    installer: prismaInstaller,
-  },
+  // nextAuth: {
+  //   inUse: packages.includes("nextAuth"),
+  //   installer: nextAuthInstaller,
+  // },
+  // prisma: {
+  //   inUse: packages.includes("prisma"),
+  //   installer: prismaInstaller,
+  // },
   tailwind: {
     inUse: packages.includes("tailwind"),
     installer: tailwindInstaller,
@@ -67,6 +71,14 @@ export const buildPkgInstallerMap = (packages: AvailablePackages[]): PkgInstalle
   envVariables: {
     inUse: true,
     installer: envVariablesInstaller,
+  },
+  recoil: {
+    inUse: packages.includes("recoil"),
+    installer: recoilInstaller,
+  },
+  carbon: {
+    inUse: packages.includes("carbon"),
+    installer: carbonInstaller,
   },
 });
 

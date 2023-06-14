@@ -29,5 +29,11 @@ export const dependencyVersionMap = {
 
   // external Backend
   "react-query": "^3.39.3",
+  // recoil
+  recoil: "^0.7.7",
+  //carbon
+  "@carbon/icons-react": "^11.19.0",
+  "@carbon/react": "^1.30.0",
+  "@types/carbon__icons-react": "^11.16.0",
 } as const;
 export type AvailableDependencies = keyof typeof dependencyVersionMap;

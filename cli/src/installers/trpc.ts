@@ -18,8 +18,8 @@ export const trpcInstaller: Installer = ({ frontendDir, packages }) => {
     devMode: false,
   });
 
-  const usingAuth = packages?.nextAuth.inUse;
-  const usingPrisma = packages?.prisma.inUse;
+  // const usingAuth = packages?.nextAuth.inUse;
+  // const usingPrisma = packages?.prisma.inUse;
 
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
@@ -29,14 +29,14 @@ export const trpcInstaller: Installer = ({ frontendDir, packages }) => {
   const utilsSrc = path.join(extrasDir, "src/utils/api.ts");
   const utilsDest = path.join(frontendDir, "src/utils/api.ts");
 
-  const trpcFile =
-    usingAuth && usingPrisma
-      ? "with-auth-prisma.ts"
-      : usingAuth
-      ? "with-auth.ts"
-      : usingPrisma
-      ? "with-prisma.ts"
-      : "base.ts";
+  const trpcFile = "base.ts";
+  // usingAuth && usingPrisma
+  //   ? "with-auth-prisma.ts"
+  //   : usingAuth
+  //   ? "with-auth.ts"
+  //   : usingPrisma
+  //   ? "with-prisma.ts"
+  //   : "base.ts";
   const trpcSrc = path.join(extrasDir, "src/server/api/trpc", trpcFile);
   const trpcDest = path.join(frontendDir, "src/server/api/trpc.ts");
 
@@ -46,14 +46,14 @@ export const trpcInstaller: Installer = ({ frontendDir, packages }) => {
   const nextConfigSrc = path.join(extrasDir, "config/with-trpc.next.config.mjs");
   const nextConfigDest = path.join(frontendDir, "next.config.mjs");
 
-  const exampleRouterFile =
-    usingAuth && usingPrisma
-      ? "with-auth-prisma.ts"
-      : usingAuth
-      ? "with-auth.ts"
-      : usingPrisma
-      ? "with-prisma.ts"
-      : "base.ts";
+  const exampleRouterFile = "base.ts";
+  // usingAuth && usingPrisma
+  //   ? "with-auth-prisma.ts"
+  //   : usingAuth
+  //   ? "with-auth.ts"
+  //   : usingPrisma
+  //   ? "with-prisma.ts"
+  //   : "base.ts";
 
   const exampleRouterSrc = path.join(
     extrasDir,

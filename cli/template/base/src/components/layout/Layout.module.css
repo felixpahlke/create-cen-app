@@ -3,3 +3,21 @@
     margin-top: 3rem;
     height: calc(100vh - 48px);
 }
+
+.header {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    height: 48px;
+    border-bottom: 1px solid #d5d5d5;
+}
+
+.appName {
+    margin-left: 1rem;
+    text-decoration: none;
+    color: black;
+}

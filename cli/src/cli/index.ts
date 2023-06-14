@@ -47,7 +47,7 @@ interface CliResults {
 const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
   displayName: DEFAULT_DISPLAY_NAME,
-  packages: ["nextAuth", "prisma", "tailwind", "trpc"],
+  packages: ["tailwind", "envVariables", "carbon", "recoil"],
   backend: "default",
   pythonVersion: { path: "/usr/bin/python3", owner: "system" },
   flags: {
@@ -163,8 +163,6 @@ export const runCli = async () => {
     cliResults.packages = [];
     if (cliResults.flags.trpc) cliResults.packages.push("trpc");
     if (cliResults.flags.tailwind) cliResults.packages.push("tailwind");
-    if (cliResults.flags.prisma) cliResults.packages.push("prisma");
-    if (cliResults.flags.nextAuth) cliResults.packages.push("nextAuth");
   }
 
   // Explained below why this is in a try/catch block
@@ -191,12 +189,15 @@ export const runCli = async () => {
 
       await promptLanguage();
 
-      const useTailwind = await promptTailwind();
-      if (useTailwind) {
-        cliResults.packages = ["tailwind"];
-      } else {
-        cliResults.packages = [];
-      }
+      // const useTailwind = await promptTailwind();
+      // if (useTailwind) {
+      //   cliResults.packages = ["tailwind"];
+      // } else {
+      //   cliResults.packages = [];
+      // }
+
+      // TODO: add more supported packages
+      cliResults.packages = await promptPackages();
 
       // cliResults.flags.importAlias = await promptImportAlias();
 
@@ -205,9 +206,6 @@ export const runCli = async () => {
       if (cliResults.backend === "trpc") {
         cliResults.packages.push("trpc");
       }
-
-      // TODO: add more supported packages
-      // cliResults.packages = await promptPackages();
 
       if (!cliResults.flags.noInstall) {
         cliResults.flags.noInstall = !(await promptInstall());
@@ -321,39 +319,38 @@ const promptLanguage = async (): Promise<void> => {
 };
 
 // TODO: add more supported packages
-
-// const promptPackages = async (): Promise<AvailablePackages[]> => {
-//   const { packages } = await inquirer.prompt<Pick<CliResults, "packages">>({
-//     name: "packages",
-//     type: "checkbox",
-//     message: "Which packages would you like to enable?",
-//     choices: availablePackages
-//       .filter((pkg) => pkg !== "envVariables") // don't prompt for env-vars
-//       .map((pkgName) => ({
-//         name: pkgName,
-//         checked: false,
-//       })),
-//   });
-
-//   return packages;
-// };
-
-const promptTailwind = async (): Promise<boolean> => {
-  const { tailwind } = await inquirer.prompt<{ tailwind: boolean }>({
-    name: "tailwind",
-    type: "confirm",
-    message: "Would you like to use Tailwind CSS? (highly recommended)",
-    default: true,
+const promptPackages = async (): Promise<AvailablePackages[]> => {
+  const { packages } = await inquirer.prompt<Pick<CliResults, "packages">>({
+    name: "packages",
+    type: "checkbox",
+    message: "Which packages would you like to enable?",
+    choices: availablePackages
+      .filter((pkg) => pkg !== "envVariables" && pkg !== "trpc") // don't prompt for env-vars or trpc (this one is prompted in backend selection)
+      .map((pkgName) => ({
+        name: pkgName,
+        checked: false,
+      })),
   });
 
-  if (tailwind) {
-    logger.success("Nice one! We'll install Tailwind CSS!");
-  } else {
-    logger.info("No worries! You can always add Tailwind CSS later.");
-  }
-
-  return tailwind;
+  return packages;
 };
+
+// const promptTailwind = async (): Promise<boolean> => {
+//   const { tailwind } = await inquirer.prompt<{ tailwind: boolean }>({
+//     name: "tailwind",
+//     type: "confirm",
+//     message: "Would you like to use Tailwind CSS? (highly recommended)",
+//     default: true,
+//   });
+
+//   if (tailwind) {
+//     logger.success("Nice one! We'll install Tailwind CSS!");
+//   } else {
+//     logger.info("No worries! You can always add Tailwind CSS later.");
+//   }
+
+//   return tailwind;
+// };
 
 // const promptImportAlias = async (): Promise<string> => {
 //   const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
