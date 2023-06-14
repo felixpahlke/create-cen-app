@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  an interactive CLI to create a Client-Engineering-Style application with Next.js, Carbon Design System, Tailwind CSS, and tRPC or FastAPI.
+  an interactive CLI to create a Client-Engineering-Style application with Next.js & optionally: Carbon Design System, Tailwind CSS, and tRPC or FastAPI.
 </p>
 
 <p align="center">
