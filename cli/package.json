@@ -1,6 +1,6 @@
 {
   "name": "create-cen-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "create an client-engineering-style app",
   "license": "MIT",
   "repository": {
@@ -11,6 +11,7 @@
   "keywords": [
     "create-cen-app",
     "init.tips",
+    "carbon design system",
     "next.js",
     "t3-stack",
     "tailwind",

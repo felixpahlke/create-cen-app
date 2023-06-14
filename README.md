@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-  Interactive CLI to start a full-stack, Next.js app, optionally using tRPC or a FastAPI as a backend.
+  an interactive CLI to create a Client-Engineering-Style application with Next.js, Carbon Design System, Tailwind CSS, and tRPC or FastAPI.
 </p>
 
 <p align="center">
@@ -27,9 +27,9 @@
   watch Theo's overview on Youtube here
 </a></p>
 
-<h2 id="about">The CEN Stack</h2>
+<h2 id="about">The Client Engineering Stack</h2>
 
-The stack is focused on **simplicity**, **modularity**, and **efficiency**. It consists of:
+The stack is focused on **simplicity**, **modularity**, and **speed**. It consists of:
 
 - [Next.js](https://nextjs.org)
 - [Tailwind CSS](https://tailwindcss.com)
@@ -47,11 +47,11 @@ The stack is focused on **simplicity**, **modularity**, and **efficiency**. It c
 - **FastAPI** is a great Backend-choice when working with Data Scientists, as their code be easily pasted into the backend. It's easy to use, has great docs, and the automatic implementation of the **Swagger UI** makes it great to work with.
 - **tRPC** when Data Science is not a major requirement, tRPC is a great choice for a Backend-solution (technically Next.js is the backend). It provides type-safety from back- to frontend and has an overall great developer experience.
 
-### So... what is `create-cen-app`? A template?
+### What is `create-cen-app`?
 
-Kind of? `create-cen-app` is a CLI built by seasoned CEN Stack devs to streamline the setup of a modular CEN Stack app. This means each piece is optional, and the "template" is generated based on your specific needs.
+`create-cen-app` is a CLI built by CEN Stack devs to streamline the setup of a modular CEN Stack app. This means each piece is optional, and the "template" is generated based on your specific needs.
 
-After countless projects and many years on this tech, we have lots of opinions and insights. We’ve done our best to encode them into this CLI.
+After countless projects, working with many different customers and teams, we've found that this stack is the best for Client Engineering. It provides flexibility when working with data scientists and makes implementing new features a breeze (which is crucial in CLient Engineering).
 
 This is **NOT** an all-inclusive template. We **expect** you to bring your own libraries that solve the needs of **YOUR** application.
 
