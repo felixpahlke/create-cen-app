@@ -4,7 +4,7 @@ import { PKG_ROOT } from "~/consts.js";
 import { type Installer } from "~/installers/index.js";
 import { addPackageDependency } from "~/utils/addPackageDependency.js";
 
-export const tailwindInstaller: Installer = ({ frontendDir }) => {
+export const tailwindInstaller: Installer = ({ frontendDir, packages }) => {
   addPackageDependency({
     frontendDir,
     dependencies: [
@@ -32,8 +32,14 @@ export const tailwindInstaller: Installer = ({ frontendDir }) => {
   const cssSrc = path.join(extrasDir, "src/styles/tailwind.css");
   const cssDest = path.join(frontendDir, "src/styles/tailwind.css");
 
-  const layoutSrc = path.join(extrasDir, "src/components/with-tw/layout");
-  const layoutDest = path.join(frontendDir, "src/components/layout");
+  // Select between carbon or no carbon
+  if (packages.carbon) {
+    const layoutSrc = path.join(extrasDir, "src/components/with-tw-carbon/layout");
+    const layoutDest = path.join(frontendDir, "src/components/layout");
+  } else {
+    const layoutSrc = path.join(extrasDir, "src/components/with-tw/layout");
+    const layoutDest = path.join(frontendDir, "src/components/layout");
+  }
 
   fs.copySync(twCfgSrc, twCfgDest);
   fs.copySync(postcssCfgSrc, postcssCfgDest);
