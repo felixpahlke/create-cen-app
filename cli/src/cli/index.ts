@@ -189,13 +189,6 @@ export const runCli = async () => {
 
       await promptLanguage();
 
-      // const useTailwind = await promptTailwind();
-      // if (useTailwind) {
-      //   cliResults.packages = ["tailwind"];
-      // } else {
-      //   cliResults.packages = [];
-      // }
-
       // TODO: add more supported packages
       cliResults.packages = await promptPackages();
 
@@ -334,23 +327,6 @@ const promptPackages = async (): Promise<AvailablePackages[]> => {
 
   return packages;
 };
-
-// const promptTailwind = async (): Promise<boolean> => {
-//   const { tailwind } = await inquirer.prompt<{ tailwind: boolean }>({
-//     name: "tailwind",
-//     type: "confirm",
-//     message: "Would you like to use Tailwind CSS? (highly recommended)",
-//     default: true,
-//   });
-
-//   if (tailwind) {
-//     logger.success("Nice one! We'll install Tailwind CSS!");
-//   } else {
-//     logger.info("No worries! You can always add Tailwind CSS later.");
-//   }
-
-//   return tailwind;
-// };
 
 // const promptImportAlias = async (): Promise<string> => {
 //   const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
