@@ -24,6 +24,8 @@ export const removePackages = ({ packages, projectDir, frontendDir }: RemovePack
     replaceTextInFiles(frontendDir, `import useCounter from "~/atoms/useCounter";`, "");
     replaceTextInFiles(frontendDir, `const [counter] = useCounter();`, "");
     replaceTextInFiles(frontendDir, `<p className="mt-6">counter: {counter}</p>`, "");
+    replaceTextInFiles(frontendDir, `<p>counter: {counter}</p>`, "");
+
     // remove useCounter from Header.tsx
     replaceTextInFiles(frontendDir, `const [counter, setCounter] = useCounter();`, "");
     replaceTextInFiles(frontendDir, `const [counter] = useCounter();`, "");
