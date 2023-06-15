@@ -11,9 +11,9 @@ export default function Header() {
   const [theme, setTheme] = useTheme();
 
   return (
-    <CarbonHeader aria-label="CEN APP">
+    <CarbonHeader aria-label="CEN [project-name]">
       <HeaderName href="/" prefix="CEN">
-        APP
+        [project-name]
       </HeaderName>
       <HeaderGlobalBar>
         <HeaderGlobalAction aria-label="Theme Switcher" tooltipAlignment="start">

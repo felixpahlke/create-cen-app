@@ -1,7 +1,6 @@
 import { type PackageRemoverOptions } from "./index.js";
 import fs from "fs-extra";
 import path from "path";
-import { formatFile } from "~/utils/formatFile.js";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
 import replaceTextInFilesBetween from "~/utils/replaceTextInFilesBetween.js";
 
@@ -27,9 +26,21 @@ export const recoilRemover = ({ frontendDir }: PackageRemoverOptions) => {
   replaceTextInFiles(frontendDir, 'import { BrightnessContrast } from "@carbon/icons-react";', "");
   replaceTextInFiles(frontendDir, "HeaderGlobalAction,", "");
   replaceTextInFiles(frontendDir, "HeaderGlobalBar,", "");
+  // remove useCounter from index.tsx
+  replaceTextInFiles(frontendDir, `import useCounter from "~/atoms/useCounter";`, "");
+  replaceTextInFiles(frontendDir, `const [counter] = useCounter();`, "");
+  replaceTextInFiles(frontendDir, `<p className="mt-6">counter: {counter}</p>`, "");
+  replaceTextInFiles(frontendDir, `<p>counter: {counter}</p>`, "");
+  replaceTextInFilesBetween(frontendDir, `.counterButton {`, `}`, "");
 
-  // format files
-  formatFile(path.join(frontendDir, "src/components/layout/Layout.tsx"));
-  formatFile(path.join(frontendDir, "src/components/layout/Header.tsx"));
-  formatFile(path.join(frontendDir, "src/pages/_app.tsx"));
+  // remove useCounter from Header.tsx
+  replaceTextInFiles(frontendDir, `const [counter, setCounter] = useCounter();`, "");
+  replaceTextInFiles(frontendDir, `const [counter] = useCounter();`, "");
+  replaceTextInFiles(frontendDir, `setCounter(counter + 1);`, "");
+  replaceTextInFilesBetween(
+    path.join(frontendDir, "src/components/layout"),
+    `<button`,
+    `button>`,
+    "",
+  );
 };

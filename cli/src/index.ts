@@ -3,6 +3,7 @@ import { installDependencies } from "./helpers/installDependencies.js";
 import { addPackageDependency } from "./utils/addPackageDependency.js";
 import { getVersion } from "./utils/getCENVersion.js";
 import { getNpmVersion, renderVersionWarning } from "./utils/renderVersionWarning.js";
+import replaceTextInFiles from "./utils/replaceTextInFiles.js";
 import fs from "fs-extra";
 import path from "path";
 import { type PackageJson } from "type-fest";
@@ -30,7 +31,7 @@ const main = async () => {
   const {
     appName,
     packages,
-    // displayName,
+    displayName,
     backend,
     pythonVersion,
     flags: { noGit, noInstall, importAlias, noVenv },
@@ -65,9 +66,9 @@ const main = async () => {
   }
 
   // update displayName in files
-  // if (displayName) {
-  //   replaceTextInFiles(frontendDir, "\\[project-name\\]", displayName);
-  // }
+  if (displayName) {
+    replaceTextInFiles(frontendDir, "[project-name]", displayName);
+  }
 
   // add react-query if using external backend
   if (backend !== "default" && backend !== "trpc") {

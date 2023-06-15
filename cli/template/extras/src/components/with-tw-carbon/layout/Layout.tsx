@@ -2,8 +2,6 @@ import Header from "./Header";
 import { Theme } from "@carbon/react";
 import useTheme from "~/atoms/useTheme";
 
-// this was copied from extras
-
 interface LayoutProps {
   children: React.ReactNode;
 }

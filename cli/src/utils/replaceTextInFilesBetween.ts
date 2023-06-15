@@ -17,7 +17,7 @@ function replaceTextInFilesBetween(
     } else {
       const data = fs.readFileSync(filePath, "utf8");
       const updatedData = data.replace(
-        new RegExp(`${escapeRegexChars(searchStart)}[\\s\\S]*${escapeRegexChars(searchEnd)}`, "g"),
+        new RegExp(`${escapeRegexChars(searchStart)}[\\s\\S]*?${escapeRegexChars(searchEnd)}`, "g"),
         replacement,
       );
 

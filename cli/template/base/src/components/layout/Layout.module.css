@@ -8,6 +8,7 @@
     position: fixed;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     top: 0;
     left: 0;
     right: 0;
@@ -17,7 +18,14 @@
 }
 
 .appName {
-    margin-left: 1rem;
+    margin-left: 1.5rem;
     text-decoration: none;
     color: black;
+}
+
+.counterButton {
+    all: unset;
+    cursor: pointer;
+    font-size: 30px;
+    padding-right: 1rem;
 }

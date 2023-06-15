@@ -185,7 +185,7 @@ export const runCli = async () => {
         cliResults.appName = await promptAppName();
       }
 
-      // cliResults.displayName = await promptDisplayName();
+      cliResults.displayName = await promptDisplayName();
 
       await promptLanguage();
 
@@ -277,20 +277,20 @@ const promptAppName = async (): Promise<string> => {
   return appName;
 };
 
-// const promptDisplayName = async (): Promise<string> => {
-//   const { displayName } = await inquirer.prompt<Pick<CliResults, "displayName">>({
-//     name: "displayName",
-//     type: "input",
-//     message: "What should be the displayed Name in your Application?",
-//     default: defaultOptions.displayName,
-//     // validate: validateAppName, TODO: add validation
-//     transformer: (input: string) => {
-//       return input.trim();
-//     },
-//   });
+const promptDisplayName = async (): Promise<string> => {
+  const { displayName } = await inquirer.prompt<Pick<CliResults, "displayName">>({
+    name: "displayName",
+    type: "input",
+    message: "What should be the displayed Name in your Application?",
+    default: defaultOptions.displayName,
+    // validate: validateAppName, TODO: add validation
+    transformer: (input: string) => {
+      return input.trim();
+    },
+  });
 
-//   return displayName;
-// };
+  return displayName;
+};
 
 const promptLanguage = async (): Promise<void> => {
   const { language } = await inquirer.prompt<{ language: string }>({

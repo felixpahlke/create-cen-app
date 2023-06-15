@@ -1,4 +1,6 @@
 import { PackageRemoverOptions } from "./index.js";
+import fs from "fs-extra";
+import path from "path";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
 
 export const carbonRemover = ({ frontendDir }: PackageRemoverOptions) => {
@@ -11,4 +13,6 @@ export const carbonRemover = ({ frontendDir }: PackageRemoverOptions) => {
   replaceTextInFiles(frontendDir, '@use "@carbon/react/scss/spacing";', "");
   replaceTextInFiles(frontendDir, '@use "@carbon/grid";', "");
   replaceTextInFiles(frontendDir, '@use "@carbon/type";', "");
+
+  fs.removeSync(path.join(frontendDir, "src/atoms/useTheme.ts"));
 };
