@@ -104,6 +104,5 @@ export const getProcessedCommand = (
   if (!command) {
     return null;
   }
-  const processedCommand = processCommand(command, usedDependencies);
-  return processedCommand;
+  return processCommand(command, usedDependencies);
 };

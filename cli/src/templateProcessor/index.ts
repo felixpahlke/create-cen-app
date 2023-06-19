@@ -55,9 +55,9 @@ export const processTemplate = ({
     }
   }
 
+  // TODO: optimize this to not save the file twice
   // write the processed lines to result file
   fs.writeFileSync(resultPath, processedLines.join("\n"));
-
   // format the result file
   formatFile(resultPath, "typescript");
 };
