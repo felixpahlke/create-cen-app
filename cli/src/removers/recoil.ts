@@ -18,8 +18,6 @@ export const recoilRemover = ({ frontendDir }: PackageRemoverOptions) => {
   replaceTextInFiles(frontendDir, `const [theme] = useTheme();`, "");
   // Replace Thee component with empty tags
   replaceTextInFiles(frontendDir, `<Theme theme={theme}>`, '<Theme theme="white">');
-  // replaceTextInFiles(frontendDir, `</Theme>`, "</>");
-  // replaceTextInFiles(frontendDir, `import { Theme } from "@carbon/react";`, "");
   // remove ThemeSwitcher from Header
   replaceTextInFilesBetween(frontendDir, `<HeaderGlobalBar>`, `</HeaderGlobalBar>`, "");
   // remove more Imports

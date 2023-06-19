@@ -15,6 +15,12 @@ interface RemovePackagesProps {
 
 export const removePackages = ({ packages, projectDir, frontendDir }: RemovePackagesProps) => {
   // remove tailwind css import if not using tailwind
+  if (!packages.recoil.inUse) {
+    recoilRemover({ frontendDir });
+  }
+  if (!packages.carbon.inUse) {
+    carbonRemover({ frontendDir });
+  }
   if (!packages.tailwind.inUse) {
     replaceTextInFiles(frontendDir, 'import "~/styles/tailwind.css";', "");
   }
@@ -41,12 +47,6 @@ export const removePackages = ({ packages, projectDir, frontendDir }: RemovePack
   }
 
   //TEST: remove recoil if not using recoil
-  if (!packages.recoil.inUse) {
-    recoilRemover({ frontendDir });
-  }
-  if (!packages.carbon.inUse) {
-    carbonRemover({ frontendDir });
-  }
   if (packages.carbon.inUse) {
     replaceTextInFiles(frontendDir, "@tailwind base;", "");
   }
