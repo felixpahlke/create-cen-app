@@ -36,7 +36,7 @@ export const getCommand = (line: string): Command | null => {
   }
   // trim and remove double spaces
   const trimmedComment = comment.trim().replace(/ +(?= )/g, "");
-  if (trimmedComment.startsWith("$start:")) {
+  if (trimmedComment.startsWith("$with:")) {
     const conditionString = trimmedComment.substring(7).trim();
     return { conditionString, position: "start" };
   }

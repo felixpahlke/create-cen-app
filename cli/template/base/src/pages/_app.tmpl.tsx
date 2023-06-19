@@ -1,37 +1,37 @@
 import { type AppType } from "next/dist/shared/lib/utils";
-// $start: extBackend
+// $with: extBackend
 import { QueryClient, QueryClientProvider } from "react-query";
 // $end: extBackend
 
-// $start: recoil
+// $with: recoil
 import { RecoilRoot } from "recoil";
 // $end: recoil
 
 import Layout from "~/components/layout/Layout";
-// $start: trpc
+// $with: trpc
 import { api } from "~/utils/api";
 // $end: trpc
 import "~/styles/globals.scss";
-// $start: tailwind
+// $with: tailwind
 import "~/styles/tailwind.css";
 
 // $end: tailwind
 
-// $start: extBackend
+// $with: extBackend
 const queryClient = new QueryClient();
 // $end: extBackend
 
-// $start: recoil && !extBackend
+// $with: recoil && !extBackend
 console.log("hi");
 // $end: recoil && !extBackend
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    // $start: recoil
+    // $with: recoil
     <RecoilRoot>
       {/* $end: recoil */}
 
-      {/* $start: extBackend */}
+      {/* $with: extBackend */}
       <QueryClientProvider client={queryClient}>
         {/* $end: extBackend */}
 
@@ -39,20 +39,20 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           <Component {...pageProps} />
         </Layout>
 
-        {/* $start: extBackend */}
+        {/* $with: extBackend */}
       </QueryClientProvider>
       {/* $end: extBackend */}
 
-      {/* $start: recoil */}
+      {/* $with: recoil */}
     </RecoilRoot>
     // $end: recoil
   );
 };
 
-// $start: trpc
+// $with: trpc
 export default api.withTRPC(MyApp);
 // $end: trpc
 
-// $start: !trpc
+// $with: !trpc
 export default MyApp;
 // $end: !trpc
