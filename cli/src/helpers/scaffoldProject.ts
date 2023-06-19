@@ -97,6 +97,16 @@ export const scaffoldProject = async ({
   fs.copySync(srcDir, frontendDir);
   fs.renameSync(path.join(frontendDir, "_gitignore"), path.join(frontendDir, ".gitignore"));
 
+  // specifically copying favicon.ico
+  // somehow it broke when using fs.copySync
+  const srcStream = fs.createReadStream(path.join(srcDir, "public/favicon.ico"), {
+    encoding: "binary",
+  });
+  const destStream = fs.createWriteStream(path.join(frontendDir, "public/favicon.ico"), {
+    encoding: "binary",
+  });
+  srcStream.pipe(destStream);
+
   const scaffoldedName = projectName === "." ? "App" : chalk.cyan.bold(projectName);
 
   spinner.succeed(`${scaffoldedName} ${chalk.green("scaffolded successfully!")}\n`);
