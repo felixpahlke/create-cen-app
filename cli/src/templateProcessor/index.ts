@@ -1,8 +1,8 @@
 import { formatFile } from "../utils/formatFile.js";
-import { getTemplateCommand } from "./getTemplateCommand.js";
+import { getProcessedCommand } from "./processCommands.js";
 import fs from "fs-extra";
 
-export const templateDeps = ["tailwind", "trpc", "extbackend", "recoil"] as const;
+export const templateDeps = ["tailwind", "trpc", "extBackend", "recoil", "carbon"] as const;
 
 export type TemplateDeps = (typeof templateDeps)[number];
 
@@ -21,23 +21,33 @@ export const processTemplate = ({
   const lines = fileContents.split("\n");
   const processedLines: string[] = [];
   let deleteMode = false;
-  let currentCommand: TemplateDeps | null = null;
+  let activeDeleteCommand: string | null = null;
 
   // find out which lines should be kept:
-  for (let line of lines) {
-    const templateCommand = getTemplateCommand(line, usedDependencies);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!.trim();
+
+    const templateCommand = getProcessedCommand(line, usedDependencies);
+
     if (templateCommand) {
+      // checks if we have a different delete command active and if so, skip the current command
+      if (templateCommand.position === "start" && activeDeleteCommand) {
+        continue;
+      }
+
+      // set activeDeleteCommand
       if (templateCommand.mode === "delete" && templateCommand.position === "start") {
         deleteMode = true;
-        currentCommand = templateCommand.dependency;
+        activeDeleteCommand = templateCommand.conditionString;
       }
+      // if we are in delete mode and the current command is the one that ends the delete mode (supports nested commands)
       if (
-        // if we are in delete mode and the current command is the one that ends the delete mode (supports nested commands)
         templateCommand.mode === "delete" &&
         templateCommand.position === "end" &&
-        currentCommand === templateCommand.dependency
+        activeDeleteCommand === templateCommand.conditionString
       ) {
         deleteMode = false;
+        activeDeleteCommand = null;
       }
     }
     if (!deleteMode && !templateCommand) {
