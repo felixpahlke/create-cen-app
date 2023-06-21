@@ -17,6 +17,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.0.1",
     "@types/eslint": "^8.37.0",
     "@types/node": "^18.16.0",
     "@types/react": "^18.2.6",

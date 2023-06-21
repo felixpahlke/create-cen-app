@@ -22,9 +22,18 @@ const config = {
     return [
       {
         source: "/api/:path*",
-        destination: `${env.API_BASE_URL}/api/:path*`,
+        destination: `${env.API_URL}/:path*`,
       },
     ];
+  },
+  // this lets us use SVGs as components - for example:
+  // import Logo from '../assets/logo.svg';
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
+    return config;
   },
 };
 export default config;
