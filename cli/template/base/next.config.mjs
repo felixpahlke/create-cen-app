@@ -17,7 +17,9 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  output: "standalone", // to enable running in docker
+  // to enable running in docker:
+  output: "standalone",
+  // this is doing the proxying for us:
   async rewrites() {
     return [
       {
