@@ -2,8 +2,6 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
-const envModule = await import("./src/env.mjs");
-const env = envModule.env;
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -19,15 +17,6 @@ const config = {
   },
   // to enable running in docker:
   output: "standalone",
-  // this is doing the proxying for us:
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${env.API_URL}/:path*`,
-      },
-    ];
-  },
   // this lets us use SVGs as components - for example:
   // import Logo from '../assets/logo.svg';
   webpack(config) {

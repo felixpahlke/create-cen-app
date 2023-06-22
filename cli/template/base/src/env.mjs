@@ -13,8 +13,10 @@ export const env = createEnv({
 
   /**
    * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
+   * isn't built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
+   * keep in mind that NEXT_PUBLIC_ env vars HAVE TO BE AVAILABLE AT BUILD TIME, so if you want to
+   * make them dynamic, you have to use serverside env vars and pass them to the client via
+   * getServerSideProps
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
@@ -30,8 +32,9 @@ export const env = createEnv({
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
-   * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
-   * This is especially useful for Docker builds.
+   * Run `build` or `dev` with `SKIP_ENV_VALIDATION` set to false, if you want to throw errors at build time 
+   * on invalid/missing environment variables. or make it dynamic with:
+    skipValidation: !!process.env.SKIP_ENV_VALIDATION,
    */
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+  skipValidation: true,
 });
