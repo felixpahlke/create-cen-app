@@ -17,7 +17,7 @@ export const config = {
   },
 };
 
-export default (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+const proxyHandler = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
   if (req.url) {
     req.url = req.url.replace(/^\/api/, "");
   }
@@ -30,3 +30,5 @@ export default (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     });
   });
 };
+
+export default proxyHandler;
