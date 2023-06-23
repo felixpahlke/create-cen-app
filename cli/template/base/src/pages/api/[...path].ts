@@ -18,8 +18,11 @@ export const config = {
 };
 
 export default (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+  if (req.url) {
+    req.url = req.url.replace(/^\/api/, "");
+  }
   return new Promise((resolve, reject) => {
-    proxy.web(req, res, { target: env.API_URL, changeOrigin: true, prependPath: false }, (err) => {
+    proxy.web(req, res, { target: env.API_URL, changeOrigin: true }, (err) => {
       if (err) {
         return reject(err);
       }
