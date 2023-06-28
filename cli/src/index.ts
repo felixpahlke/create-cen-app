@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 import { installDependencies } from "./helpers/installDependencies.js";
-import { addPackageDependency } from "./utils/addPackageDependency.js";
 import { getVersion } from "./utils/getCENVersion.js";
 import { getNpmVersion, renderVersionWarning } from "./utils/renderVersionWarning.js";
-import replaceTextInFiles from "./utils/replaceTextInFiles.js";
 import fs from "fs-extra";
 import path from "path";
 import { type PackageJson } from "type-fest";
@@ -49,6 +47,7 @@ const main = async () => {
     noInstall,
     noVenv,
     proxy,
+    displayName,
   });
 
   // Write name to package.json
@@ -58,23 +57,6 @@ const main = async () => {
   fs.writeJSONSync(path.join(frontendDir, "package.json"), pkgJson, {
     spaces: 2,
   });
-
-  // update displayName in files
-  if (displayName) {
-    replaceTextInFiles(frontendDir, "[project-name]", displayName);
-  }
-
-  // add react-query if using external backend
-  if (backend !== "default" && backend !== "trpc") {
-    addPackageDependency({
-      frontendDir,
-      dependencies: ["react-query"],
-      devMode: false,
-    });
-  }
-
-  // Rename _eslintrc.json to .eslintrc.json - we use _eslintrc.json to avoid conflicts with the monorepos linter
-  fs.renameSync(path.join(frontendDir, "_eslintrc.cjs"), path.join(frontendDir, ".eslintrc.cjs"));
 
   if (!noInstall) {
     await installDependencies({ frontendDir });

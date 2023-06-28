@@ -5,9 +5,11 @@ import { fastApiInstaller } from "~/installers/fastApi.js";
 import { AvailableBackends, type PkgInstallerMap } from "~/installers/index.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
+import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
 
 interface CreateProjectOptions {
   projectName: string;
+  displayName?: string;
   packages: PkgInstallerMap;
   backend: AvailableBackends;
   pythonVersion: PythonVersion;
@@ -25,6 +27,7 @@ type Directories = {
 
 export const createProject = async ({
   projectName,
+  displayName,
   packages,
   backend,
   pythonVersion,
@@ -64,17 +67,13 @@ export const createProject = async ({
     noInstall,
   });
 
-  // TODO: Look into using handlebars or other templating engine to scaffold without needing to maintain multiple copies of the same file
-  // selectAppFile({ frontendDir, packages, backend });
-  // selectIndexFile({ frontendDir, packages, backend });
-  // selectCompontentsFiles({ frontendDir, packages, backend });
-
-  // remove stuff the user doesn't want
-  // removePackages({ packages, projectDir, frontendDir });
-
   // install backend
   if (backend === "fastapi") {
     await fastApiInstaller({ backendDir, noVenv, pythonVersion });
+  }
+  // update displayName in files
+  if (displayName) {
+    replaceTextInFiles(frontendDir, "[project-name]", displayName);
   }
 
   return { frontendDir, backendDir, projectDir } as Directories;

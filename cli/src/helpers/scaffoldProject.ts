@@ -12,6 +12,7 @@ import {
 import { proxyInstaller } from "~/installers/proxy.js";
 import { buildUsedDependencies } from "~/templateProcessor/buildUsedDependencies.js";
 import { processFiles } from "~/templateProcessor/index.js";
+import { addPackageDependency } from "~/utils/addPackageDependency.js";
 import { logger } from "~/utils/logger.js";
 
 type ScaffoldProjectProps = InstallerOptions & {
@@ -111,9 +112,20 @@ export const scaffoldProject = async ({
   processFiles({ templateDir: srcDir, resultDir: frontendDir, usedDependencies });
 
   fs.renameSync(path.join(frontendDir, "_gitignore"), path.join(frontendDir, ".gitignore"));
+  // Rename _eslintrc.json to .eslintrc.json - we use _eslintrc.json to avoid conflicts with the monorepos linter
+  fs.renameSync(path.join(frontendDir, "_eslintrc.cjs"), path.join(frontendDir, ".eslintrc.cjs"));
 
   if (proxy) {
     proxyInstaller({ frontendDir });
+  }
+
+  // add react-query if using external backend
+  if (backend !== "default" && backend !== "trpc") {
+    addPackageDependency({
+      frontendDir,
+      dependencies: ["react-query"],
+      devMode: false,
+    });
   }
 
   // specifically copying favicon.ico

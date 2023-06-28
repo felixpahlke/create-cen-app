@@ -57,7 +57,7 @@ const defaultOptions: CliResults = {
     CI: false,
     tailwind: true,
     trpc: false,
-    proxy: true,
+    proxy: false,
     // prisma: false,
     // nextAuth: false,
   },
@@ -200,7 +200,7 @@ export const runCli = async () => {
       }
       if (cliResults.backend === "default") {
         cliResults.flags.proxy = await promptProxy();
-      } else {
+      } else if (cliResults.backend === "fastapi") {
         cliResults.flags.proxy = true;
       }
 
