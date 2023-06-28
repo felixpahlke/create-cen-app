@@ -5,10 +5,12 @@ import ora from "ora";
 import path from "path";
 import { PKG_ROOT } from "~/consts.js";
 import { type InstallerOptions } from "~/installers/index.js";
+import { proxyInstaller } from "~/installers/proxy.js";
 import { logger } from "~/utils/logger.js";
 
 type ScaffoldProjectProps = InstallerOptions & {
   projectDir: string;
+  proxy: boolean;
 };
 
 // This bootstraps the base Next.js application
@@ -18,6 +20,7 @@ export const scaffoldProject = async ({
   frontendDir,
   pkgManager,
   noInstall,
+  proxy,
 }: ScaffoldProjectProps) => {
   const srcDir = path.join(PKG_ROOT, "template/base");
 
@@ -96,6 +99,10 @@ export const scaffoldProject = async ({
   // now copying frontend files
   fs.copySync(srcDir, frontendDir);
   fs.renameSync(path.join(frontendDir, "_gitignore"), path.join(frontendDir, ".gitignore"));
+
+  if (proxy) {
+    proxyInstaller({ frontendDir });
+  }
 
   // specifically copying favicon.ico
   // somehow it broke when using fs.copySync

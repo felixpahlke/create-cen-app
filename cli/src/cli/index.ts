@@ -14,14 +14,12 @@ import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion, getUserPythonVersions } from "~/utils/getUserPythonVersion.js";
 import { logger } from "~/utils/logger.js";
 import { validateAppName } from "~/utils/validateAppName.js";
-import { validateImportAlias } from "~/utils/validateImportAlias.js";
 
 interface CliFlags {
   noGit: boolean;
   noInstall: boolean;
   noVenv: boolean;
   default: boolean;
-  importAlias: string;
 
   /** @internal Used in CI. */
   CI: boolean;
@@ -30,9 +28,10 @@ interface CliFlags {
   /** @internal Used in CI. */
   trpc: boolean;
   /** @internal Used in CI. */
-  prisma: boolean;
-  /** @internal Used in CI. */
-  nextAuth: boolean;
+  proxy: boolean;
+  // prisma: boolean;
+  // /** @internal Used in CI. */
+  // nextAuth: boolean;
 }
 
 interface CliResults {
@@ -56,11 +55,11 @@ const defaultOptions: CliResults = {
     noVenv: false,
     default: false,
     CI: false,
-    tailwind: false,
+    tailwind: true,
     trpc: false,
-    prisma: false,
-    nextAuth: false,
-    importAlias: "~/",
+    proxy: true,
+    // prisma: false,
+    // nextAuth: false,
   },
 };
 
@@ -123,11 +122,11 @@ export const runCli = async () => {
       (value) => !!value && value !== "false",
     )
     /** @experimental - Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
-    .option(
-      "-i, --import-alias",
-      "Explicitly tell the CLI to use a custom import alias",
-      defaultOptions.flags.importAlias,
-    )
+    // .option(
+    //   "-i, --import-alias",
+    //   "Explicitly tell the CLI to use a custom import alias",
+    //   defaultOptions.flags.importAlias,
+    // )
     /** END CI-FLAGS */
     .version(getVersion(), "-v, --version", "Display the version number")
     .addHelpText(
@@ -198,6 +197,9 @@ export const runCli = async () => {
 
       if (cliResults.backend === "trpc") {
         cliResults.packages.push("trpc");
+      }
+      if (cliResults.backend === "default") {
+        cliResults.flags.proxy = await promptProxy();
       }
 
       if (!cliResults.flags.noInstall) {
@@ -328,21 +330,6 @@ const promptPackages = async (): Promise<AvailablePackages[]> => {
   return packages;
 };
 
-// const promptImportAlias = async (): Promise<string> => {
-//   const { importAlias } = await inquirer.prompt<Pick<CliFlags, "importAlias">>({
-//     name: "importAlias",
-//     type: "input",
-//     message: "What import alias inside Next.js would you like configured?",
-//     default: defaultOptions.flags.importAlias,
-//     validate: validateImportAlias,
-//     transformer: (input: string) => {
-//       return input.trim();
-//     },
-//   });
-
-//   return importAlias;
-// };
-
 const promptBackends = async (): Promise<AvailableBackends> => {
   const { backend } = await inquirer.prompt<{ backend: AvailableBackends }>({
     name: "backend",
@@ -381,6 +368,17 @@ const promptInstall = async (): Promise<boolean> => {
   }
 
   return install;
+};
+
+const promptProxy = async (): Promise<boolean> => {
+  const { proxy } = await inquirer.prompt<{ proxy: boolean }>({
+    name: "proxy",
+    type: "confirm",
+    message: `Would you like us to setup a proxy on /api for you?`,
+    default: true,
+  });
+
+  return proxy;
 };
 
 // only for FastAPI

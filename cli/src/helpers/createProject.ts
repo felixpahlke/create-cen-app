@@ -19,7 +19,8 @@ interface CreateProjectOptions {
   pythonVersion: PythonVersion;
   noInstall: boolean;
   noVenv: boolean;
-  importAlias: string;
+  proxy: boolean;
+  // importAlias: string;
 }
 
 type Directories = {
@@ -35,6 +36,7 @@ export const createProject = async ({
   pythonVersion,
   noInstall,
   noVenv,
+  proxy,
 }: CreateProjectOptions) => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
@@ -55,6 +57,7 @@ export const createProject = async ({
     projectDir,
     pkgManager,
     noInstall,
+    proxy,
   });
 
   // Install the selected packages

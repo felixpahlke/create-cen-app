@@ -35,5 +35,8 @@ export const dependencyVersionMap = {
   "@carbon/icons-react": "^11.19.0",
   "@carbon/react": "^1.30.0",
   "@types/carbon__icons-react": "^11.16.0",
+  // proxy
+  "http-proxy": "^1.18.1",
+  "@types/http-proxy": "^1.17.11",
 } as const;
 export type AvailableDependencies = keyof typeof dependencyVersionMap;

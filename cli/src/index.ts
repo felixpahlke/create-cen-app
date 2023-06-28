@@ -11,7 +11,6 @@ import { runCli } from "~/cli/index.js";
 import { createProject } from "~/helpers/createProject.js";
 import { initializeGit } from "~/helpers/git.js";
 import { logNextSteps } from "~/helpers/logNextSteps.js";
-import { setImportAlias } from "~/helpers/setImportAlias.js";
 import { buildPkgInstallerMap } from "~/installers/index.js";
 import { logger } from "~/utils/logger.js";
 import { parseNameAndPath } from "~/utils/parseNameAndPath.js";
@@ -34,7 +33,7 @@ const main = async () => {
     displayName,
     backend,
     pythonVersion,
-    flags: { noGit, noInstall, importAlias, noVenv },
+    flags: { noGit, noInstall, noVenv, proxy },
   } = await runCli();
 
   const usePackages = buildPkgInstallerMap(packages);
@@ -47,9 +46,9 @@ const main = async () => {
     packages: usePackages,
     backend,
     pythonVersion,
-    importAlias: importAlias,
     noInstall,
     noVenv,
+    proxy,
   });
 
   // Write name to package.json
@@ -59,11 +58,6 @@ const main = async () => {
   fs.writeJSONSync(path.join(frontendDir, "package.json"), pkgJson, {
     spaces: 2,
   });
-
-  // update import alias in any generated files if not using the default
-  if (importAlias !== "~/") {
-    setImportAlias(frontendDir, importAlias);
-  }
 
   // update displayName in files
   if (displayName) {

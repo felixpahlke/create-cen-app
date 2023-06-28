@@ -1,9 +1,6 @@
 import chalk from "chalk";
 import ora from "ora";
-import {
-  type InstallerOptions,
-  type PkgInstallerMap,
-} from "~/installers/index.js";
+import { type InstallerOptions, type PkgInstallerMap } from "~/installers/index.js";
 import { logger } from "~/utils/logger.js";
 
 type InstallPackagesOptions = {
@@ -18,11 +15,7 @@ export const installPackages = (options: InstallPackagesOptions) => {
     if (pkgOpts.inUse) {
       const spinner = ora(`Boilerplating ${name}...`).start();
       pkgOpts.installer(options);
-      spinner.succeed(
-        chalk.green(
-          `Successfully setup boilerplate for ${chalk.green.bold(name)}`,
-        ),
-      );
+      spinner.succeed(chalk.green(`Successfully setup boilerplate for ${chalk.green.bold(name)}`));
     }
   }
 
