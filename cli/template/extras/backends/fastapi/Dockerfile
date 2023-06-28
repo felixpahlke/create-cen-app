@@ -14,7 +14,6 @@ RUN pip install -r requirements/prod.txt
 
 
 ADD --chown=1001:0 app app
-ADD --chown=1001:0 resources resources
 
 EXPOSE 4000
 

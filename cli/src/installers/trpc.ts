@@ -62,6 +62,10 @@ export const trpcInstaller: Installer = ({ frontendDir, packages }) => {
   );
   const exampleRouterDest = path.join(frontendDir, "src/server/api/routers/example.ts");
 
+  // remove default api handler
+  fs.removeSync(path.join(frontendDir, "src/pages/api/[...path].ts"));
+
+  // copy files
   fs.copySync(apiHandlerSrc, apiHandlerDest);
   fs.copySync(utilsSrc, utilsDest);
   fs.copySync(trpcSrc, trpcDest);

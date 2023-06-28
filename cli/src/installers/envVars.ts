@@ -41,12 +41,14 @@ const getEnvContent = () => {
 # Example:
 # SERVERVAR="foo"
 # NEXT_PUBLIC_CLIENTVAR="bar" (Client env vars must start with NEXT_PUBLIC_)
+# keep in mind that NEXT_PUBLIC_ vars have to be available at build time
+# to use runtime env vars pass them to the client via getServerSideProps
 
 # You need this in your .env when using Recoil with next.js
 RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED=false
 
 # use this when running the backend locally
-API_BASE_URL="http://127.0.0.1:4000"
+API_URL="http://127.0.0.1:4000/api"
 `
     .trim()
     .concat("\n");
