@@ -58,7 +58,7 @@ const Home: NextPage = () => {
         {/* $with: trpc || extBackend */}
         <p
           // $with: tailwind
-          className="text-2xl"
+          className="mt-10 text-2xl"
           // $end: tailwind
           // $with: !tailwind
           className={styles.showcaseText}
