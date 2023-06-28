@@ -1,9 +1,4 @@
-/**
- * This will match all requests going to /api and proxy them to the API_URL specified in the .env file.
- * This is useful for local development when you want to use a separate backend.
- *
- * Delete this file if you want to use your own Next.js API routes.
- */
+// This will match all requests going to /api and proxy them to the API_URL specified in the .env file.
 
 import httpProxy from "http-proxy";
 import type { NextApiRequest, NextApiResponse } from "next";

@@ -1,3 +1,4 @@
+// $with: carbon
 @use "@carbon/react/scss/themes";
 @use "@carbon/react/scss/theme";
 @use "@carbon/styles";
@@ -5,8 +6,11 @@
 @use "@carbon/react/scss/spacing";
 @use "@carbon/grid";
 @use "@carbon/type";
+// $end: carbon
 
+// $with: !tailwind && !carbon
 body {
   margin: 0;
   padding: 0;
 }
+// $end: !tailwind && !carbon

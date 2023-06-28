@@ -1,6 +1,8 @@
 import { formatFile } from "../utils/formatFile.js";
 import { getProcessedCommand } from "./processCommands.js";
 import fs from "fs-extra";
+import path from "path";
+import { PKG_ROOT } from "~/consts.js";
 
 export const templateDeps = ["tailwind", "trpc", "extBackend", "recoil", "carbon"] as const;
 
@@ -55,9 +57,48 @@ export const processTemplate = ({
     }
   }
 
+  // create result file if it doesn't exist
+  if (!fs.existsSync(resultPath)) {
+    fs.ensureFileSync(resultPath);
+  }
+
   // TODO: optimize this to not save the file twice
   // write the processed lines to result file
   fs.writeFileSync(resultPath, processedLines.join("\n"));
-  // format the result file
-  formatFile(resultPath, "typescript");
+
+  const parser = resultPath.endsWith(".ts") || resultPath.endsWith(".tsx") ? "typescript" : "scss";
+  formatFile(resultPath, parser);
+};
+
+interface ProcessFilesProps {
+  templateDir: string;
+  resultDir: string;
+  usedDependencies: TemplateDeps[];
+}
+
+export const processFiles = ({ templateDir, resultDir, usedDependencies }: ProcessFilesProps) => {
+  // loop over files in templateBasePath and check if name contains .tmpl. If so, process the file
+
+  const files = fs.readdirSync(templateDir);
+
+  for (const file of files) {
+    const filePath = path.join(templateDir, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      processFiles({
+        templateDir: filePath,
+        resultDir: `${resultDir}/${file}`,
+        usedDependencies,
+      });
+    } else {
+      if (file.includes(".tmpl")) {
+        const templatePath = `${templateDir}/${file}`;
+        const resultPath = `${resultDir}/${file.replace(".tmpl", "")}`;
+        processTemplate({ templatePath, resultPath, usedDependencies });
+      } else {
+        const templatePath = `${templateDir}/${file}`;
+        const resultPath = `${resultDir}/${file}`;
+        fs.copySync(templatePath, resultPath);
+      }
+    }
+  }
 };

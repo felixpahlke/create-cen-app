@@ -4,13 +4,21 @@ import inquirer from "inquirer";
 import ora from "ora";
 import path from "path";
 import { PKG_ROOT } from "~/consts.js";
-import { type InstallerOptions } from "~/installers/index.js";
+import {
+  PkgInstallerMap,
+  type AvailableBackends,
+  type InstallerOptions,
+} from "~/installers/index.js";
 import { proxyInstaller } from "~/installers/proxy.js";
+import { buildUsedDependencies } from "~/templateProcessor/buildUsedDependencies.js";
+import { processFiles } from "~/templateProcessor/index.js";
 import { logger } from "~/utils/logger.js";
 
 type ScaffoldProjectProps = InstallerOptions & {
+  packages: PkgInstallerMap;
   projectDir: string;
   proxy: boolean;
+  backend: AvailableBackends;
 };
 
 // This bootstraps the base Next.js application
@@ -20,7 +28,9 @@ export const scaffoldProject = async ({
   frontendDir,
   pkgManager,
   noInstall,
+  packages,
   proxy,
+  backend,
 }: ScaffoldProjectProps) => {
   const srcDir = path.join(PKG_ROOT, "template/base");
 
@@ -96,8 +106,10 @@ export const scaffoldProject = async ({
 
   spinner.start();
 
-  // now copying frontend files
-  fs.copySync(srcDir, frontendDir);
+  // now copying & processing frontend files
+  const usedDependencies = buildUsedDependencies({ packages, backend });
+  processFiles({ templateDir: srcDir, resultDir: frontendDir, usedDependencies });
+
   fs.renameSync(path.join(frontendDir, "_gitignore"), path.join(frontendDir, ".gitignore"));
 
   if (proxy) {

@@ -21,10 +21,6 @@ import "~/styles/tailwind.css";
 const queryClient = new QueryClient();
 // $end: extBackend
 
-// $with: recoil && !extBackend
-console.log("hi");
-// $end: recoil && !extBackend
-
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     // $with: recoil

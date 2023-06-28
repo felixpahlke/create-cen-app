@@ -73,12 +73,12 @@ const main = async () => {
     });
   }
 
+  // Rename _eslintrc.json to .eslintrc.json - we use _eslintrc.json to avoid conflicts with the monorepos linter
+  fs.renameSync(path.join(frontendDir, "_eslintrc.cjs"), path.join(frontendDir, ".eslintrc.cjs"));
+
   if (!noInstall) {
     await installDependencies({ frontendDir });
   }
-
-  // Rename _eslintrc.json to .eslintrc.json - we use _eslintrc.json to avoid conflicts with the monorepos linter
-  fs.renameSync(path.join(frontendDir, "_eslintrc.cjs"), path.join(frontendDir, ".eslintrc.cjs"));
 
   if (!noGit) {
     await initializeGit(projectDir);

@@ -200,6 +200,8 @@ export const runCli = async () => {
       }
       if (cliResults.backend === "default") {
         cliResults.flags.proxy = await promptProxy();
+      } else {
+        cliResults.flags.proxy = true;
       }
 
       if (!cliResults.flags.noInstall) {
