@@ -15,9 +15,8 @@ export const dependencyVersionMap = {
   tailwindcss: "^3.3.0",
   autoprefixer: "^10.4.14",
   postcss: "^8.4.21",
-  prettier: "^2.8.8",
-  "prettier-plugin-tailwindcss": "^0.2.8",
-  "@types/prettier": "^2.7.2",
+  prettier: "^3.1.0",
+  "prettier-plugin-tailwindcss": "^0.5.7",
 
   // tRPC
   "@trpc/client": "^10.26.0",
@@ -34,7 +33,6 @@ export const dependencyVersionMap = {
   //carbon
   "@carbon/icons-react": "^11.19.0",
   "@carbon/react": "^1.30.0",
-  "@types/carbon__icons-react": "^11.16.0",
   // proxy
   "http-proxy": "^1.18.1",
   "@types/http-proxy": "^1.17.11",
