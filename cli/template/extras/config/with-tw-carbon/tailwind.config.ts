@@ -5,9 +5,10 @@ export default {
   theme: {
     extend: {},
   },
-  // Uncomment this if you have problems with tailwindcss and carbon
-  // corePlugins: {
-  //   preflight: false,
-  // },
+  // this needs to be disabled for Carbon Components to work
+  // properly with tailwindcss
+  corePlugins: {
+    preflight: false,
+  },
   plugins: [],
 } satisfies Config;

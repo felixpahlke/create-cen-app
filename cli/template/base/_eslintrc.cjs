@@ -5,9 +5,7 @@ const path = require("path");
 const config = {
   overrides: [
     {
-      extends: [
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-      ],
+      extends: ["plugin:@typescript-eslint/recommended-requiring-type-checking"],
       files: ["*.ts", "*.tsx"],
       parserOptions: {
         project: path.join(__dirname, "tsconfig.json"),
@@ -20,6 +18,13 @@ const config = {
         "@typescript-eslint/no-unsafe-argument": "warn",
         "@typescript-eslint/no-unsafe-member-access": "warn",
         "@typescript-eslint/no-misused-promises": "warn",
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/ban-ts-comment": "warn",
+        "@typescript-eslint/restrict-plus-operands": "warn",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/no-empty-interface": "warn",
+        "@next/next/no-img-element": "off",
+        "prefer-const": "warn",
       },
     },
   ],
@@ -38,7 +43,6 @@ const config = {
       },
     ],
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-    
   },
 };
 

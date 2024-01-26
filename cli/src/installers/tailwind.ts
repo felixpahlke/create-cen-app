@@ -20,8 +20,11 @@ export const tailwindInstaller: Installer = ({ frontendDir, packages }) => {
 
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
-  const twCfgSrc = path.join(extrasDir, "config/tailwind.config.ts");
   const twCfgDest = path.join(frontendDir, "tailwind.config.ts");
+  let twCfgSrc = path.join(extrasDir, "config/tailwind.config.ts");
+  if (packages?.carbon.inUse) {
+    twCfgSrc = path.join(extrasDir, "config/with-tw-carbon/tailwind.config.ts");
+  }
 
   const postcssCfgSrc = path.join(extrasDir, "config/postcss.config.cjs");
   const postcssCfgDest = path.join(frontendDir, "postcss.config.cjs");
