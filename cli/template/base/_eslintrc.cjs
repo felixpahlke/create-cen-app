@@ -12,6 +12,7 @@ const config = {
       },
       // needs to be ignored in overrides, otherwise the disabled rules will be re-enabled
       rules: {
+        "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/no-unsafe-assignment": "warn",
         "@typescript-eslint/no-unsafe-call": "warn",
         "@typescript-eslint/no-unsafe-return": "warn",
