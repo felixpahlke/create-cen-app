@@ -12,27 +12,26 @@ export const dependencyVersionMap = {
   "@prisma/client": "^4.14.0",
 
   // TailwindCSS
-  tailwindcss: "^3.3.0",
+  tailwindcss: "^3.4.1",
   autoprefixer: "^10.4.14",
   postcss: "^8.4.21",
   prettier: "^3.1.0",
   "prettier-plugin-tailwindcss": "^0.5.7",
 
   // tRPC
-  "@trpc/client": "^10.26.0",
-  "@trpc/server": "^10.26.0",
-  "@trpc/react-query": "^10.26.0",
-  "@trpc/next": "^10.26.0",
+  "@trpc/client": "^10.45.0",
+  "@trpc/server": "^10.45.0",
+  "@trpc/react-query": "^10.45.0",
+  "@trpc/next": "^10.45.0",
+  // & external Backend
   "@tanstack/react-query": "^4.29.7",
   superjson: "1.12.2",
 
-  // external Backend
-  "react-query": "^3.39.3",
   // recoil
   recoil: "^0.7.7",
   //carbon
-  "@carbon/icons-react": "^11.19.0",
-  "@carbon/react": "^1.30.0",
+  "@carbon/icons-react": "^11.34.1",
+  "@carbon/react": "^1.48.1",
   // proxy
   "http-proxy": "^1.18.1",
   "@types/http-proxy": "^1.17.11",

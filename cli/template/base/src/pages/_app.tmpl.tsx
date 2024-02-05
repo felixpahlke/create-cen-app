@@ -1,6 +1,7 @@
 import { type AppType } from "next/dist/shared/lib/utils";
+
 // $with: extBackend
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // $end: extBackend
 
 // $with: recoil

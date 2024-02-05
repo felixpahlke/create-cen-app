@@ -123,7 +123,7 @@ export const scaffoldProject = async ({
   if (backend !== "default" && backend !== "trpc") {
     addPackageDependency({
       frontendDir,
-      dependencies: ["react-query"],
+      dependencies: ["@tanstack/react-query"],
       devMode: false,
     });
   }

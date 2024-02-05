@@ -4,7 +4,7 @@ import styles from "./index.module.css";
 import { type NextPage } from "next";
 import Head from "next/head";
 // $with: extBackend
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 // $end: extBackend
 // $with: recoil && !carbon
 import useCounter from "~/atoms/useCounter";
@@ -20,7 +20,7 @@ const Home: NextPage = () => {
   // $end: recoil && !carbon
 
   // $with: trpc
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const { data, isLoading } = api.example.hello.useQuery({ text: "from tRPC" });
   // $end: trpc
 
   // $with: extBackend
@@ -30,7 +30,7 @@ const Home: NextPage = () => {
     return data as { message: string };
   };
 
-  const { data } = useQuery("message", fetchMessage);
+  const { data, isLoading } = useQuery({ queryKey: ["message"], queryFn: fetchMessage});
   // $end: extBackend
 
   return (
@@ -65,10 +65,10 @@ const Home: NextPage = () => {
           // $end: !tailwind
         >
           {/* $with: trpc */}
-          {hello.data ? hello.data.greeting : "Loading tRPC query..."}
+          {isLoading ? "Loading tRPC query..." : data?.greeting}
           {/* $end: trpc */}
           {/* $with: extBackend */}
-          {data ? data.message : "Loading query"}
+          {isLoading ? "Loading query" : data?.message}
           {/* $end: extBackend */}
         </p>
         {/* $end: trpc || extBackend */}
