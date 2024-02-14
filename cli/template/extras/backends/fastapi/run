@@ -29,7 +29,23 @@ if [ -d "$VENV_DIR" ]; then
 
         # Check if .env file exists
         if [ -f "$ENV_FILE" ]; then
-            export $(cat "$ENV_FILE" | xargs)
+        
+            #check if .env is in valid format
+            if ! grep -q -E '^((export )?[A-Z_]+)=' "$ENV_FILE"; then
+                echo "${Cyan}dev:${Color_Off}      ${BYellow}.env file is not in valid format.${Color_Off}"
+                echo "${Cyan}dev:${Color_Off}      ${BYellow}Please check the .env.example file for the correct format.${Color_Off}"
+                exit 1
+            fi
+
+            set -a
+            if ! source .env; then
+                echo "${Cyan}dev:${Color_Off}      ${BYellow}Error loading .env file. Format might be invalid.${Color_Off}"
+                echo "${Cyan}dev:${Color_Off}      ${BYellow}Please check the .env.example file for the correct format.${Color_Off}"
+                exit 1
+            fi            
+            # source .env
+            set +a
+
             echo "${Cyan}dev:${Color_Off}      ${BGreen}.env file loaded.${Color_Off}"
         else
             echo "${Cyan}dev:${Color_Off}      No .env file found."

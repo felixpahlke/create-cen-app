@@ -221,9 +221,11 @@ export const runCli = async () => {
               );
               cliResults.flags.noVenv = true;
             } else {
-              cliResults.pythonVersion = pythonVersions[0];
+              // prompt python version here
+              // cliResults.pythonVersion = pythonVersions[0];
+              cliResults.pythonVersion = await promptPythonVersion(pythonVersions);
               logger.success(
-                `Any time! We'll use ${pythonVersions[0]?.version} on path: ${pythonVersions[0]?.path}`,
+                `Any time! We'll use ${cliResults.pythonVersion.version} on path: ${cliResults.pythonVersion.path}`,
               );
             }
           }
@@ -389,12 +391,27 @@ const promptSetupVenv = async (): Promise<boolean> => {
     name: "install",
     type: "confirm",
     message: `Would you like us to setup your ${chalk.magenta(
-      "python environment",
-    )}? (venv - including requirements)? ${chalk.yellow(" experimental")}`,
+      "python environment (venv)",
+    )}? ${chalk.yellow("experimental")}`,
     default: true,
   });
 
   return setupVenv;
+};
+
+const promptPythonVersion = async (availableVersions: PythonVersion[]): Promise<PythonVersion> => {
+  const { pythonVersion } = await inquirer.prompt<{ pythonVersion: PythonVersion }>({
+    name: "pythonVersion",
+    type: "list",
+    message: `Which python version would you like to use? We found these Versions on your system:`,
+    choices: availableVersions.map((version) => ({
+      name: `${version.version} - ${version.path}`,
+      value: version,
+    })),
+    // default: true,
+  });
+
+  return pythonVersion;
 };
 
 const promptGit = async (): Promise<boolean> => {
