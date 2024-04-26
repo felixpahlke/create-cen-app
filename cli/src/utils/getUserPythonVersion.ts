@@ -8,11 +8,14 @@ export type PythonVersion = {
 
 export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> => {
   try {
-    // get all paths for python3 & python found in $PATH
-    const python3Paths = await getPythonPaths("python3");
-    const pythonPaths = await getPythonPaths("python");
+    // get all python aliases
+    const aliases = await getPythonAliases();
 
-    const paths = [...python3Paths, ...pythonPaths];
+    const paths: string[] = [];
+    for (const alias of aliases) {
+      const _paths = await getPythonPaths(alias);
+      paths.push(..._paths);
+    }
 
     if (paths.length === 0) {
       return null;
@@ -36,16 +39,14 @@ export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> =
       (version, index, self) => index === self.findIndex((v) => v.path === version.path),
     );
 
-    // sort so that system versions are first
-    // versions.sort((a, b) => {
-    //   if (a.owner === "system" && b.owner === "user") {
-    //     return -1;
-    //   } else if (a.owner === "user" && b.owner === "system") {
-    //     return 1;
-    //   } else {
-    //     return 0;
-    //   }
-    // });
+    // sort by version
+    versions = versions.sort((a, b) => {
+      if (a.version && b.version) {
+        return compareVersions(a.version, b.version);
+      } else {
+        return 0;
+      }
+    });
 
     return versions;
   } catch (error) {
@@ -53,6 +54,18 @@ export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> =
     return null; // Python 3 not found
   }
 };
+async function getPythonAliases(): Promise<string[]> {
+  try {
+    const { stdout } = await execa("compgen", ["-c", "|", "grep", "-E", "'^python[0-9.]*$'"], {
+      shell: true,
+    });
+    const text = stdout.trim();
+    const aliases = text.split("\n");
+    return aliases;
+  } catch (e) {
+    return [];
+  }
+}
 
 async function getPythonPaths(alias: string): Promise<string[]> {
   try {
@@ -74,4 +87,22 @@ async function getPythonVersion(path: string): Promise<string | null> {
     // console.log(error);
     return null; // Python not found
   }
+}
+
+function compareVersions(versionA: string, versionB: string): number {
+  const partsA = versionA.split(".").map(Number);
+  const partsB = versionB.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const partA = partsA[i] || 0;
+    const partB = partsB[i] || 0;
+
+    if (partA < partB) {
+      return 1;
+    } else if (partA > partB) {
+      return -1;
+    }
+  }
+
+  return 0;
 }
