@@ -31,6 +31,7 @@ const main = async () => {
     displayName,
     backend,
     pythonVersion,
+    envVars,
     flags: { noGit, noInstall, noVenv, proxy },
   } = await runCli();
 
@@ -47,6 +48,7 @@ const main = async () => {
     noInstall,
     noVenv,
     proxy,
+    envVars,
     displayName,
   });
 

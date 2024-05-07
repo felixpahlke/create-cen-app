@@ -9,7 +9,6 @@ export const PKG_ROOT = path.join(distPath, "../");
 
 //export const PKG_ROOT = path.dirname(require.main.filename);
 
-
 export const TITLE_TEXT = `   ___ ___ ___   __ _____ ___    ___ ___ _   _     __   ___ __
   / __| _ \\ __| /  \\_   _| __|  / __|___| \\ | |   /  \\ | _ \\ _ \\
  | (__|   / _| / /\\ \\| | | _|  | (__| _||  \\  |  / /\\ \\|  _/  _/
@@ -18,3 +17,5 @@ export const TITLE_TEXT = `   ___ ___ ___   __ _____ ___    ___ ___ _   _     __
 export const DEFAULT_APP_NAME = "my-cen-app";
 export const DEFAULT_DISPLAY_NAME = "MVP-Starter";
 export const CREATE_CEN_APP = "create-cen-app";
+
+export const WATSONX_REPO = "git@github.ibm.com:Felix-Pahlke/rag-orchestrator-python.git";

@@ -8,7 +8,10 @@ import {
   type AvailablePackages,
   BackendDisplay,
   backendsDisplayList,
+  AvailableEnvVars,
+  availableEnvVars,
 } from "~/installers/index.js";
+import { checkForPoetry } from "~/utils/checkForPoetry.js";
 import { getVersion } from "~/utils/getCENVersion.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion, getUserPythonVersions } from "~/utils/getUserPythonVersion.js";
@@ -40,6 +43,7 @@ interface CliResults {
   packages: AvailablePackages[];
   backend: AvailableBackends;
   pythonVersion: PythonVersion;
+  envVars: Record<AvailableEnvVars, string>;
   flags: CliFlags;
 }
 
@@ -49,6 +53,7 @@ const defaultOptions: CliResults = {
   packages: ["tailwind", "envVariables", "carbon", "recoil"],
   backend: "default",
   pythonVersion: { path: "/usr/bin/python3", owner: "system" },
+  envVars: {},
   flags: {
     noGit: false,
     noInstall: false,
@@ -200,12 +205,8 @@ export const runCli = async () => {
       }
       if (cliResults.backend === "default") {
         cliResults.flags.proxy = await promptProxy();
-      } else if (cliResults.backend === "fastapi") {
+      } else if (cliResults.backend === "fastapi" || cliResults.backend === "watsonx") {
         cliResults.flags.proxy = true;
-      }
-
-      if (!cliResults.flags.noInstall) {
-        cliResults.flags.noInstall = !(await promptInstall());
       }
 
       if (cliResults.backend === "fastapi") {
@@ -214,15 +215,12 @@ export const runCli = async () => {
           if (!cliResults.flags.noVenv) {
             const pythonVersions = await getUserPythonVersions();
 
-            // TODO: Maybe give user option to select python version?
             if (!pythonVersions || !pythonVersions[0]) {
               logger.warn(
                 "We couldn't find any python versions on your system (Maybe we just don't support your OS yet)",
               );
               cliResults.flags.noVenv = true;
             } else {
-              // prompt python version here
-              // cliResults.pythonVersion = pythonVersions[0];
               cliResults.pythonVersion = await promptPythonVersion(pythonVersions);
               logger.success(
                 `Any time! We'll use ${cliResults.pythonVersion.version} on path: ${cliResults.pythonVersion.path}`,
@@ -230,6 +228,39 @@ export const runCli = async () => {
             }
           }
         }
+      }
+
+      if (cliResults.backend === "watsonx") {
+        cliResults.envVars = await promptEnvVars();
+
+        if (!cliResults.flags.noVenv) {
+          cliResults.flags.noVenv = !(await promptSetupVenv());
+          if (!cliResults.flags.noVenv) {
+            const pythonVersions = await getUserPythonVersions();
+            const poetryInstalled = await checkForPoetry();
+
+            const python311Installed = pythonVersions
+              ? pythonVersions.some((version) => version.version?.includes("3.11."))
+              : false;
+
+            if (!python311Installed) {
+              logger.warn(
+                "This backend requires Python 3.11, but we couldn't find it on your system. Please install and follow the Backend README to setup your environment.",
+              );
+              cliResults.flags.noVenv = true;
+            }
+            if (!poetryInstalled) {
+              logger.warn(
+                "This backend requires Poetry, but we couldn't find it on your system. Please install and follow the Backend README to setup your environment.",
+              );
+              cliResults.flags.noVenv = true;
+            }
+          }
+        }
+      }
+
+      if (!cliResults.flags.noInstall) {
+        cliResults.flags.noInstall = !(await promptInstall());
       }
 
       if (!cliResults.flags.noGit) {
@@ -397,6 +428,23 @@ const promptSetupVenv = async (): Promise<boolean> => {
   });
 
   return setupVenv;
+};
+
+const promptEnvVars = async (): Promise<Record<AvailableEnvVars, string>> => {
+  logger.info(
+    chalk.bold("You can set values for the following environment variables (Leave empty to skip):"),
+  );
+  const envVars: Record<AvailableEnvVars, string> = {};
+  for (const envVar of availableEnvVars) {
+    const { value } = await inquirer.prompt<{ value: string }>({
+      name: "value",
+      type: "input",
+      message: `${envVar}=`,
+    });
+    envVars[envVar] = value;
+  }
+
+  return envVars;
 };
 
 const promptPythonVersion = async (availableVersions: PythonVersion[]): Promise<PythonVersion> => {

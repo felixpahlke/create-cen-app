@@ -41,7 +41,7 @@ export const fastApiInstaller = async ({
   // const pythonVersion = pythonVersions?.[0];
 
   const spinner = ora(`Creating virtual environment...`).start();
-  await execa(pythonVersion.path, ["-m", "venv", "venv"], {
+  await execa(pythonVersion.path, ["-m", "venv", ".venv"], {
     cwd: destDir,
     stdio: "inherit",
   });
@@ -49,7 +49,7 @@ export const fastApiInstaller = async ({
 
   // instal python requirements in venv
   const spinner2 = ora(`Installing python requirements...`).start();
-  await execa("venv/bin/pip", ["install", "-r", "requirements.txt"], {
+  await execa(".venv/bin/pip", ["install", "-r", "requirements.txt"], {
     cwd: destDir,
     stdio: "inherit",
   });

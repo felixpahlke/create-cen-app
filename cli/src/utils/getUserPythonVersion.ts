@@ -26,7 +26,6 @@ export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> =
     for (const path of paths) {
       const version = await getPythonVersion(path);
       if (version) {
-        // same for linux??
         if (path.startsWith("/usr/bin")) {
           versions.push({ path, version, owner: "system" });
         } else {

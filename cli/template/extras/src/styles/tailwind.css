@@ -1,9 +1,4 @@
-/* @tailwind base; */
-/* Tailwind base causes conflicts with carbon designs
-
-this file only imports the tailwind components and utilities
-
-*/
+/* this file only imports the tailwind components and utilities */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

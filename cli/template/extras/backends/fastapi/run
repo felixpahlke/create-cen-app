@@ -1,6 +1,6 @@
 # Enables running the script from any directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_DIR="$SCRIPT_DIR/venv"
+VENV_DIR="$SCRIPT_DIR/.venv"
 ENV_FILE="$SCRIPT_DIR/.env"
 
 Green='\033[0;32m'
@@ -20,7 +20,7 @@ if [ -d "$VENV_DIR" ]; then
     else
         echo "${Cyan}dev:${Color_Off}      ${BYellow}Your virtual environment is not activated.${Color_Off}"
         echo "${Cyan}dev:${Color_Off}      ${BYellow}Remember to activate your venv before installing new packages:${Color_Off}"
-        echo "${Cyan}dev:${Color_Off}      ${BCyan}source venv/bin/activate${Color_Off}"
+        echo "${Cyan}dev:${Color_Off}      ${BCyan}source .venv/bin/activate${Color_Off}"
     fi
 
 
@@ -56,7 +56,7 @@ if [ -d "$VENV_DIR" ]; then
     else
         echo "${Cyan}dev:${Color_Off}      Uvicorn not found in virtual environment."
         echo "${Cyan}dev:${Color_Off}      lease install requirements.txt in virtual environment."
-        echo "${Cyan}dev:${Color_Off}      source venv/bin/activate"
+        echo "${Cyan}dev:${Color_Off}      source .venv/bin/activate"
         echo "${Cyan}dev:${Color_Off}      pip install -r requirements.txt"
     fi
 

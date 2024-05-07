@@ -12,8 +12,11 @@ export const buildUsedDependencies = ({ packages, backend }: BuildUsedDependenci
   if (backend === "trpc") {
     usedDependencies.push("trpc");
   }
-  if (backend === "fastapi") {
+  if (backend === "fastapi" || backend === "watsonx") {
     usedDependencies.push("extBackend");
+  }
+  if (backend === "watsonx") {
+    usedDependencies.push("watsonx");
   }
   if (packages.tailwind.inUse) {
     usedDependencies.push("tailwind");

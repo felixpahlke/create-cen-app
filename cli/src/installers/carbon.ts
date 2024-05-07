@@ -10,11 +10,13 @@ export const carbonInstaller: Installer = ({ frontendDir, packages }) => {
     dependencies: ["@carbon/react", "@carbon/icons-react"],
     devMode: false,
   });
-  addPackageDependency({
-    frontendDir,
-    dependencies: ["@types/carbon__icons-react"],
-    devMode: true,
-  });
+
+  // Types should be included in carbon icons now, so types package is deprecated
+  // addPackageDependency({
+  //   frontendDir,
+  //   dependencies: ["@types/carbon__icons-react"],
+  //   devMode: true,
+  // });
 
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 

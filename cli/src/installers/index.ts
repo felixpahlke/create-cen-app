@@ -20,8 +20,11 @@ export const availablePackages = [
 ] as const;
 export type AvailablePackages = (typeof availablePackages)[number];
 
-export const availableBackends = ["default", "trpc", "fastapi", "go"] as const;
+export const availableBackends = ["default", "trpc", "fastapi", "watsonx", "go"] as const;
 export type AvailableBackends = (typeof availableBackends)[number];
+
+export const availableEnvVars = ["IBM_API_KEY", "WATSONX_PROJECT_ID"];
+export type AvailableEnvVars = (typeof availableEnvVars)[number];
 
 export interface InstallerOptions {
   frontendDir: string;
@@ -94,13 +97,13 @@ export const backendsDisplayList: BackendDisplay[] = [
     short: "tRPC",
   },
   {
-    name: "FastAPI (Python web-framework -> great with data science)",
+    name: "FastAPI",
     value: "fastapi",
     short: "FastAPI",
   },
-  // {
-  //   name: "Go - (high performance)",
-  //   value: "go",
-  //   short: "Go",
-  // },
+  {
+    name: "WatsonX (FastAPI Backend setup for RAG with WatsonX) <BETA>",
+    value: "watsonx",
+    short: "WatsonX",
+  },
 ];

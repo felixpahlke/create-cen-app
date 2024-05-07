@@ -11,8 +11,13 @@ import useCounter from "~/atoms/useCounter";
 // $end: recoil && !carbon
 // $with: trpc
 import { api } from "~/utils/api";
-
 // $end: trpc
+// $with: watsonx
+import { useState } from "react";
+import { useStream } from "~/hooks/useStream";
+// $end: watsonx
+
+
 
 const Home: NextPage = () => {
   // $with: recoil && !carbon
@@ -23,7 +28,27 @@ const Home: NextPage = () => {
   const { data, isLoading } = api.example.hello.useQuery({ text: "from tRPC" });
   // $end: trpc
 
-  // $with: extBackend
+  // $with: watsonx
+  const [prompt, setPrompt] = useState("");
+
+  const getStream = async (input: { prompt: string }, signal: AbortSignal) => {
+    const response = await fetch(`/api/generation/stream?prompt=${input.prompt}`, {
+      signal,
+    });
+    return response;
+  };
+
+  const { start, stop, text, isLoading, isProcessing } = useStream({
+    getStream,
+    onSuccess: (text) => {
+      console.log(text);
+    },
+  });
+
+  // $end: watsonx
+
+
+  // $with: extBackend && !watsonx
   const fetchMessage = async () => {
     const res = await fetch("/api/example/hello");
     const data = await res.json();
@@ -31,7 +56,7 @@ const Home: NextPage = () => {
   };
 
   const { data, isLoading } = useQuery({ queryKey: ["message"], queryFn: fetchMessage});
-  // $end: extBackend
+  // $end: extBackend && !watsonx
 
   return (
     <>
@@ -55,7 +80,8 @@ const Home: NextPage = () => {
         >
           CEN - <strong>[project-name]</strong>
         </h1>
-        {/* $with: trpc || extBackend */}
+
+        {/* $with: !watsonx && trpc || extBackend */}
         <p
           // $with: tailwind
           className="mt-10 text-2xl"
@@ -71,7 +97,37 @@ const Home: NextPage = () => {
           {isLoading ? "Loading query" : data?.message}
           {/* $end: extBackend */}
         </p>
-        {/* $end: trpc || extBackend */}
+        {/* $end: !watsonx && trpc || extBackend */}
+
+        {/* $with: watsonx */}
+        <input
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter a prompt..."
+          className="mt-10 w-full max-w-3xl rounded-md border border-gray-300 p-2"
+        />
+
+        <button
+          onClick={() => start({ prompt })}
+          disabled={isProcessing}
+          className="mt-2 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed"
+        >
+          Generate
+        </button>
+
+        <button
+          onClick={() => stop()}
+          disabled={!isProcessing}
+          className="mt-2 bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed"
+        >
+          Stop
+        </button>
+
+        <p className="my-4 w-full max-w-3xl whitespace-pre-wrap">
+          {isLoading ? "Waiting for stream to start..." : text}
+        </p>
+        {/* $end: watsonx */}
+
 
         {/* $with: recoil && !carbon */}
         <p>counter: {counter}</p>

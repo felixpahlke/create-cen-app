@@ -39,7 +39,11 @@ export const logNextSteps = ({
       // logger.info(`  pip install -r requirements.txt`);
     } else {
       usingExternalBackend && logger.info(`  cd ${projectName}/backend`);
-      usingExternalBackend && logger.info(`  ./run\n`);
+      if (backend === "watsonx") {
+        logger.info(`  poetry run dev\n`);
+      } else {
+        usingExternalBackend && logger.info(`  ./run\n`);
+      }
       usingExternalBackend && logger.warn(`  (in another terminal window:)\n`);
       logger.info(`  cd ${frontendDir}`);
     }

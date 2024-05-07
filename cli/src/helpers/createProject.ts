@@ -2,7 +2,8 @@ import path from "path";
 import { installPackages } from "~/helpers/installPackages.js";
 import { scaffoldProject } from "~/helpers/scaffoldProject.js";
 import { fastApiInstaller } from "~/installers/fastApi.js";
-import { AvailableBackends, type PkgInstallerMap } from "~/installers/index.js";
+import { AvailableBackends, AvailableEnvVars, type PkgInstallerMap } from "~/installers/index.js";
+import { watsonxInstaller } from "~/installers/watsonx.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
@@ -15,6 +16,7 @@ interface CreateProjectOptions {
   pythonVersion: PythonVersion;
   noInstall: boolean;
   noVenv: boolean;
+  envVars?: Record<AvailableEnvVars, string>;
   proxy: boolean;
   // importAlias: string;
 }
@@ -33,6 +35,7 @@ export const createProject = async ({
   pythonVersion,
   noInstall,
   noVenv,
+  envVars,
   proxy,
 }: CreateProjectOptions) => {
   const pkgManager = getUserPkgManager();
@@ -71,6 +74,10 @@ export const createProject = async ({
   if (backend === "fastapi") {
     await fastApiInstaller({ backendDir, noVenv, pythonVersion });
   }
+  if (backend === "watsonx") {
+    await watsonxInstaller({ backendDir, frontendDir, noVenv, pythonVersion, envVars });
+  }
+
   // update displayName in files
   if (displayName) {
     replaceTextInFiles(frontendDir, "[project-name]", displayName);
