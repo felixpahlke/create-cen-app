@@ -18,4 +18,4 @@ export const DEFAULT_APP_NAME = "my-cen-app";
 export const DEFAULT_DISPLAY_NAME = "MVP-Starter";
 export const CREATE_CEN_APP = "create-cen-app";
 
-export const WATSONX_REPO = "git@github.ibm.com:Felix-Pahlke/rag-orchestrator-python.git";
+export const WATSONX_REPO = "git@github.ibm.com:Thomas-Schick/rag-orchestrator-python.git";

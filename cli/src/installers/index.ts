@@ -102,7 +102,7 @@ export const backendsDisplayList: BackendDisplay[] = [
     short: "FastAPI",
   },
   {
-    name: "WatsonX (FastAPI Backend setup for RAG with WatsonX) <BETA>",
+    name: "WatsonX RAG Backend (FastAPI) <BETA>",
     value: "watsonx",
     short: "WatsonX",
   },

@@ -104,13 +104,17 @@ const Home: NextPage = () => {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Enter a prompt..."
+          // $with: tailwind
           className="mt-10 w-full max-w-3xl rounded-md border border-gray-300 p-2"
+          // $end: tailwind
         />
 
         <button
           onClick={() => start({ prompt })}
           disabled={isProcessing}
+          // $with: tailwind
           className="mt-2 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed"
+          // $end: tailwind
         >
           Generate
         </button>
@@ -118,12 +122,18 @@ const Home: NextPage = () => {
         <button
           onClick={() => stop()}
           disabled={!isProcessing}
+          // $with: tailwind
           className="mt-2 bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed"
+          // $end: tailwind
         >
           Stop
         </button>
 
-        <p className="my-4 w-full max-w-3xl whitespace-pre-wrap">
+        <p 
+        // $with: tailwind
+        className="my-4 w-full max-w-3xl whitespace-pre-wrap"
+        // $end: tailwind
+        >
           {isLoading ? "Waiting for stream to start..." : text}
         </p>
         {/* $end: watsonx */}

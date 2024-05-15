@@ -9,10 +9,17 @@ import { useCallback, useRef, useState } from "react";
 
 interface StreamProps<T> {
   getStream: (input: T, signal: AbortSignal) => Promise<Response>;
-  onMessage?: (m: string) => void;
+  onMessage?: (m: string, data?: any) => void;
   onError?: (error?: unknown) => void;
   onSuccess?: (text?: string) => void;
 }
+
+type GenerationResponse = {
+  text: string;
+  error?: string | null;
+  data?: any;
+  done: boolean;
+};
 
 export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: StreamProps<T>) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -62,13 +69,30 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
               stopRef.current = false;
               break;
             }
-            if (value.includes("#error")) {
-              setIsError(true);
-              onError && onError();
+
+            const regex = /data:(.*?)(\n\n)(?!\n)/gs;
+            let matches;
+            let error = false;
+            while ((matches = regex.exec(value)) !== null) {
+              if (!matches[1]) continue;
+              const matchedText = matches[1]; // Extract text between 'data:' and the first '\n\n'
+              const genRes = JSON.parse(matchedText) as GenerationResponse;
+
+              if (genRes.error) {
+                setIsError(true);
+                onError && onError(genRes.error);
+                //break both loops
+                error = true;
+                break;
+              }
+
+              setText((prev) => prev + genRes.text);
+              onMessage && onMessage(genRes.text, genRes.data);
+            }
+            if (error) {
+              //break the outer loop
               break;
             }
-            setText((prev) => prev + value);
-            onMessage && onMessage(value);
           }
         }
       } catch (e) {
