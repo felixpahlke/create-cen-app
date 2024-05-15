@@ -9,7 +9,7 @@ import { useCallback, useRef, useState } from "react";
 
 interface StreamProps<T> {
   getStream: (input: T, signal: AbortSignal) => Promise<Response>;
-  onMessage?: (m: string, data?: any) => void;
+  onMessage?: (m: string, data?: Record<string, unknown>) => void;
   onError?: (error?: unknown) => void;
   onSuccess?: (text?: string) => void;
 }
@@ -17,7 +17,7 @@ interface StreamProps<T> {
 type GenerationResponse = {
   text: string;
   error?: string | null;
-  data?: any;
+  data?: Record<string, unknown>;
   done: boolean;
 };
 
