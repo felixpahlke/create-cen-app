@@ -38,7 +38,7 @@ const Home: NextPage = () => {
     return response;
   };
 
-  const { start, stop, text, isLoading, isProcessing } = useStream({
+  const { start, stop, text, error, isLoading, isProcessing, isError } = useStream({
     getStream,
     onSuccess: (text) => {
       console.log(text);
@@ -135,6 +135,7 @@ const Home: NextPage = () => {
         // $end: tailwind
         >
           {isLoading ? "Waiting for stream to start..." : text}
+          {isError ? error : ""}
         </p>
         {/* $end: watsonx */}
 

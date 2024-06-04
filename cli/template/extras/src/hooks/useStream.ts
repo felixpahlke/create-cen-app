@@ -27,6 +27,7 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
   const [isSuccess, setIsSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [text, setText] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const stopRef = useRef(false);
   const abortControllerRef = useRef(new AbortController());
 
@@ -37,6 +38,7 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
       setIsError(false);
       setIsSuccess(false);
       setText("");
+      setError(null);
       stopRef.current = false;
       abortControllerRef.current = new AbortController();
 
@@ -47,6 +49,7 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
           if (!stopRef.current) {
             // only set error if not cancelled
             setIsError(true);
+            setError(stream_source.statusText);
             onError && onError();
           }
           console.log("error in useStream");
@@ -80,6 +83,7 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
 
               if (genRes.error) {
                 setIsError(true);
+                setError(genRes.error);
                 onError && onError(genRes.error);
                 //break both loops
                 error = true;
@@ -99,6 +103,8 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
         if (!stopRef.current) {
           onError && onError(e);
           setIsError(true);
+          //@ts-ignore
+          setError(e.toString());
           console.error(e);
         }
       } finally {
@@ -117,5 +123,5 @@ export const useStream = <T>({ getStream, onMessage, onError, onSuccess }: Strea
     setIsError(false);
   };
 
-  return { start, stop, text: text.trim(), isLoading, isError, isSuccess, isProcessing };
+  return { start, stop, text: text.trim(), error, isLoading, isError, isSuccess, isProcessing };
 };
