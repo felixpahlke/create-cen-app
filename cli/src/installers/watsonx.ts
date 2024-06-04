@@ -4,7 +4,7 @@ import { execa } from "execa";
 import fs from "fs-extra";
 import ora from "ora";
 import path from "path";
-import { PKG_ROOT, WATSONX_REPO } from "~/consts.js";
+import { PKG_ROOT, WATSONX_BRANCH, WATSONX_REPO } from "~/consts.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
 import { logger } from "~/utils/logger.js";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
@@ -26,7 +26,7 @@ export const watsonxInstaller = async ({
 }: WatsonXInstallerOptions) => {
   // pull the repo from WATSONX_REPO into backend folder
   let spinner = ora(`Cloning WatsonX repository...`).start();
-  await execa("git", ["clone", WATSONX_REPO, backendDir], {
+  await execa("git", ["clone", "-b", WATSONX_BRANCH, WATSONX_REPO, backendDir], {
     cwd: PKG_ROOT,
     stdio: "inherit",
   });
