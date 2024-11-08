@@ -3,14 +3,7 @@ import { getProcessedCommand } from "./processCommands.js";
 import fs from "fs-extra";
 import path from "path";
 
-export const templateDeps = [
-  "tailwind",
-  "trpc",
-  "extBackend",
-  "watsonx",
-  "recoil",
-  "carbon",
-] as const;
+export const templateDeps = ["tailwind", "trpc", "extBackend", "recoil", "carbon"] as const;
 export type TemplateDeps = (typeof templateDeps)[number];
 interface ProcessTemplateProps {
   templatePath: string;

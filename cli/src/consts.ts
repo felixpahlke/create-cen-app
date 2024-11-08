@@ -15,8 +15,11 @@ export const TITLE_TEXT = `   ___ ___ ___   __ _____ ___    ___ ___ _   _     __
   \\___|_|_\\___|_/‾‾\\_\\_| |___|  \\___|___|_| \\_| /_/‾‾\\_\\_| |_|`;
 
 export const DEFAULT_APP_NAME = "my-cen-app";
-export const DEFAULT_DISPLAY_NAME = "MVP-Starter";
+export const DEFAULT_DISPLAY_NAME = "Client Engineering";
 export const CREATE_CEN_APP = "create-cen-app";
 
-export const WATSONX_REPO = "git@github.ibm.com:Thomas-Schick/rag-orchestrator-python.git";
-export const WATSONX_BRANCH = "create-cen-app";
+// export const WATSONX_REPO = "git@github.ibm.com:Thomas-Schick/rag-orchestrator-python.git";
+// export const WATSONX_BRANCH = "create-cen-app";
+
+export const FULL_STACK_CEN_TEMPLATE_REPO =
+  "git@github.com:kulimantang/full-stack-cen-template.git";

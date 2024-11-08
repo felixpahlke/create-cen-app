@@ -1,9 +1,13 @@
+import { preflightCheck } from "./preflightCheck.js";
+import * as p from "@clack/prompts";
+import chalk from "chalk";
 import path from "path";
 import { installPackages } from "~/helpers/installPackages.js";
 import { scaffoldProject } from "~/helpers/scaffoldProject.js";
 import { fastApiInstaller } from "~/installers/fastApi.js";
-import { AvailableBackends, AvailableEnvVars, type PkgInstallerMap } from "~/installers/index.js";
-import { watsonxInstaller } from "~/installers/watsonx.js";
+import { fullStackInstaller } from "~/installers/full-stack-installer.js";
+import { AvailableBackends, AvailableTemplates, type PkgInstallerMap } from "~/installers/index.js";
+// import { watsonxInstaller } from "~/installers/watsonx.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
@@ -16,8 +20,9 @@ interface CreateProjectOptions {
   pythonVersion: PythonVersion;
   noInstall: boolean;
   noVenv: boolean;
-  envVars?: Record<AvailableEnvVars, string>;
+  // envVars?: Record<AvailableEnvVars, string>;
   proxy: boolean;
+  template: AvailableTemplates;
   // importAlias: string;
 }
 
@@ -35,52 +40,69 @@ export const createProject = async ({
   pythonVersion,
   noInstall,
   noVenv,
-  envVars,
+  // envVars,
   proxy,
+  template,
 }: CreateProjectOptions) => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
 
   let frontendDir = "";
   let backendDir = "";
-  if (backend === "default" || backend === "trpc") {
+  if (template === "create-cen-app" && (backend === "default" || backend === "trpc")) {
     frontendDir = projectDir;
   } else {
     frontendDir = path.resolve(projectDir, `frontend`);
     backendDir = path.resolve(projectDir, `backend`);
   }
 
-  // Bootstraps the base Next.js application
-  await scaffoldProject({
-    projectName,
-    frontendDir,
+  if (!noInstall) {
+    p.log.info(`\nUsing: ${chalk.cyan.bold(pkgManager)}\n`);
+  }
+
+  await preflightCheck({
     projectDir,
-    pkgManager,
-    noInstall,
-    proxy,
-    packages,
-    backend,
-  });
-
-  // Install the selected packages
-  installPackages({
-    frontendDir,
-    pkgManager,
-    packages,
+    projectName,
+    template,
     noInstall,
   });
 
-  // install backend
-  if (backend === "fastapi") {
-    await fastApiInstaller({ backendDir, noVenv, pythonVersion });
-  }
-  if (backend === "watsonx") {
-    await watsonxInstaller({ backendDir, frontendDir, noVenv, pythonVersion, envVars });
+  if (template === "create-cen-app") {
+    // Bootstraps the base next.js application
+    await scaffoldProject({
+      projectDir,
+      projectName,
+      frontendDir,
+      backendDir,
+      pkgManager,
+      noInstall,
+      proxy,
+      packages,
+      backend,
+      template,
+    });
+
+    // Install the selected packages for create-cen-app
+    installPackages({
+      frontendDir,
+      pkgManager,
+      packages,
+      noInstall,
+    });
+
+    // install backend
+    if (backend === "fastapi") {
+      await fastApiInstaller({ backendDir, noVenv, pythonVersion });
+    }
+
+    // update displayName in files
+    if (displayName) {
+      replaceTextInFiles(frontendDir, "[project-name]", displayName);
+    }
   }
 
-  // update displayName in files
-  if (displayName) {
-    replaceTextInFiles(frontendDir, "[project-name]", displayName);
+  if (template === "full-stack-cen-template") {
+    await fullStackInstaller({ backendDir, frontendDir, projectDir, projectName, noInstall });
   }
 
   return { frontendDir, backendDir, projectDir } as Directories;

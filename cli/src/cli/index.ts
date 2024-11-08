@@ -1,21 +1,19 @@
+import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { Command } from "commander";
-import inquirer from "inquirer";
 import { CREATE_CEN_APP, DEFAULT_APP_NAME, DEFAULT_DISPLAY_NAME } from "~/consts.js";
+import { preflightCheck } from "~/helpers/preflightCheck.js";
 import {
   type AvailableBackends,
   availablePackages,
   type AvailablePackages,
-  BackendDisplay,
   backendsDisplayList,
-  AvailableEnvVars,
-  availableEnvVars,
+  TemplateDisplay,
+  templateDisplayList,
 } from "~/installers/index.js";
-import { checkForPoetry } from "~/utils/checkForPoetry.js";
 import { getVersion } from "~/utils/getCENVersion.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion, getUserPythonVersions } from "~/utils/getUserPythonVersion.js";
-import { logger } from "~/utils/logger.js";
 import { validateAppName } from "~/utils/validateAppName.js";
 
 interface CliFlags {
@@ -23,18 +21,7 @@ interface CliFlags {
   noInstall: boolean;
   noVenv: boolean;
   default: boolean;
-
-  /** @internal Used in CI. */
-  CI: boolean;
-  /** @internal Used in CI. */
-  tailwind: boolean;
-  /** @internal Used in CI. */
-  trpc: boolean;
-  /** @internal Used in CI. */
   proxy: boolean;
-  // prisma: boolean;
-  // /** @internal Used in CI. */
-  // nextAuth: boolean;
 }
 
 interface CliResults {
@@ -43,7 +30,7 @@ interface CliResults {
   packages: AvailablePackages[];
   backend: AvailableBackends;
   pythonVersion: PythonVersion;
-  envVars: Record<AvailableEnvVars, string>;
+  template: TemplateDisplay;
   flags: CliFlags;
 }
 
@@ -53,28 +40,20 @@ const defaultOptions: CliResults = {
   packages: ["tailwind", "envVariables", "carbon", "recoil"],
   backend: "default",
   pythonVersion: { path: "/usr/bin/python3", owner: "system" },
-  envVars: {},
+  template: templateDisplayList[0]!,
   flags: {
     noGit: false,
     noInstall: false,
     noVenv: false,
     default: false,
-    CI: false,
-    tailwind: true,
-    trpc: false,
     proxy: false,
-    // prisma: false,
-    // nextAuth: false,
   },
 };
 
 export const runCli = async () => {
   const cliResults = defaultOptions;
-
   const program = new Command().name(CREATE_CEN_APP);
 
-  // TODO: This doesn't return anything typesafe. Research other options?
-  // Emulate from: https://github.com/Schniz/soundtype-commander
   program
     .description("A CLI for creating web applications with the t3 stack")
     .argument(
@@ -96,43 +75,6 @@ export const runCli = async () => {
       "Bypass the CLI and use all default options to bootstrap a new cen-app",
       false,
     )
-    /** START CI-FLAGS */
-    /**
-     * @experimental Used for CI E2E tests. If any of the following option-flags are provided, we
-     *               skip prompting.
-     */
-    .option("--CI", "Boolean value if we're running in CI", false)
-    /** @experimental - Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
-    .option(
-      "--tailwind [boolean]",
-      "Experimental: Boolean value if we should install Tailwind CSS. Must be used in conjunction with `--CI`.",
-      (value) => !!value && value !== "false",
-    )
-    /** @experimental Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
-    .option(
-      "--nextAuth [boolean]",
-      "Experimental: Boolean value if we should install NextAuth.js. Must be used in conjunction with `--CI`.",
-      (value) => !!value && value !== "false",
-    )
-    /** @experimental - Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
-    .option(
-      "--prisma [boolean]",
-      "Experimental: Boolean value if we should install Prisma. Must be used in conjunction with `--CI`.",
-      (value) => !!value && value !== "false",
-    )
-    /** @experimental - Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
-    .option(
-      "--trpc [boolean]",
-      "Experimental: Boolean value if we should install tRPC. Must be used in conjunction with `--CI`.",
-      (value) => !!value && value !== "false",
-    )
-    /** @experimental - Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
-    // .option(
-    //   "-i, --import-alias",
-    //   "Explicitly tell the CLI to use a custom import alias",
-    //   defaultOptions.flags.importAlias,
-    // )
-    /** END CI-FLAGS */
     .version(getVersion(), "-v, --version", "Display the version number")
     .addHelpText(
       "afterAll",
@@ -144,15 +86,12 @@ export const runCli = async () => {
     )
     .parse(process.argv);
 
-  // FIXME: TEMPORARY WARNING WHEN USING YARN 3. SEE ISSUE #57
   if (process.env.npm_config_user_agent?.startsWith("yarn/3")) {
-    logger.warn(`  WARNING: It looks like you are using Yarn 3. This is currently not supported,
-  and likely to result in a crash. Please run create-cen-app with another
-  package manager such as pnpm, npm, or Yarn Classic.
-  See: https://github.com/t3-oss/create-t3-app/issues/57`);
+    p.log.warn(
+      "WARNING: Yarn 3 is currently not supported and may cause crashes. Please use pnpm, npm, or Yarn Classic instead.",
+    );
   }
 
-  // Needs to be separated outside the if statement to correctly infer the type as string | undefined
   const cliProvidedName = program.args[0];
   if (cliProvidedName) {
     cliResults.appName = cliProvidedName;
@@ -160,137 +99,134 @@ export const runCli = async () => {
 
   cliResults.flags = program.opts();
 
-  /** @internal Used for CI E2E tests. */
-  let CIMode = false;
-  if (cliResults.flags.CI) {
-    CIMode = true;
-    cliResults.packages = [];
-    if (cliResults.flags.trpc) cliResults.packages.push("trpc");
-    if (cliResults.flags.tailwind) cliResults.packages.push("tailwind");
-  }
-
-  // Explained below why this is in a try/catch block
   try {
     if (process.env.TERM_PROGRAM?.toLowerCase().includes("mintty")) {
-      logger.warn(`  WARNING: It looks like you are using MinTTY, which is non-interactive. This is most likely because you are 
-  using Git Bash. If that's that case, please use Git Bash from another terminal, such as Windows Terminal. Alternatively, you 
-  can provide the arguments from the CLI directly: https://create.t3.gg/en/installation#experimental-usage to skip the prompts.`);
-
-      const error = new Error("Non-interactive environment");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (error as any).isTTYError = true;
-      throw error;
+      p.log.warn(
+        "WARNING: MinTTY detected which is non-interactive. Please use another terminal like Windows Terminal, or provide CLI arguments directly.",
+      );
+      throw Object.assign(new Error("Non-interactive environment"), { isTTYError: true });
     }
 
-    // if --CI flag is set, we are running in CI mode and should not prompt the user
-    // if --default flag is set, we should not prompt the user
-    if (!cliResults.flags.default && !CIMode) {
+    if (!cliResults.flags.default) {
+      const template = await p.select({
+        message: "Which template would you like to use?",
+        options: templateDisplayList.map((template) => ({
+          label: chalk.bold(template.name),
+          hint: template.description,
+          value: template,
+        })),
+        initialValue: templateDisplayList[0]!,
+      });
+
+      cliResults.template = template as TemplateDisplay;
+
       if (!cliProvidedName) {
-        cliResults.appName = await promptAppName();
+        const appName = await p.text({
+          message: "What will your project be called?",
+          defaultValue: defaultOptions.appName,
+          placeholder: defaultOptions.appName,
+          validate: validateAppName,
+        });
+        if (appName) cliResults.appName = appName as string;
       }
 
-      cliResults.displayName = await promptDisplayName();
+      if (cliResults.template.value === "create-cen-app") {
+        const language = await p.select({
+          message: "Will you be using TypeScript or JavaScript?",
+          options: [
+            { label: "TypeScript", value: "typescript" },
+            { label: "JavaScript", value: "javascript" },
+          ],
+          initialValue: "typescript",
+        });
 
-      await promptLanguage();
+        if (language === "javascript") {
+          p.note(chalk.redBright("Wrong answer, using TypeScript instead"));
+        }
 
-      // TODO: add more supported packages
-      cliResults.packages = await promptPackages();
+        const packages = await p.multiselect({
+          message: "Which packages would you like to enable? (Space to select. A to toggle all)",
+          options: availablePackages
+            .filter((pkg) => pkg !== "envVariables" && pkg !== "trpc")
+            .map((pkgName) => ({
+              label: pkgName,
+              value: pkgName,
+            })),
+        });
 
-      // cliResults.flags.importAlias = await promptImportAlias();
+        cliResults.packages = packages as AvailablePackages[];
 
-      cliResults.backend = await promptBackends();
+        const backend = await p.select({
+          message: "Which backend would you like to use?",
+          options: backendsDisplayList.map((backend) => ({
+            label: backend.name,
+            value: backend.value,
+          })),
+          initialValue: "default",
+        });
 
-      if (cliResults.backend === "trpc") {
-        cliResults.packages.push("trpc");
-      }
-      if (cliResults.backend === "default") {
-        cliResults.flags.proxy = await promptProxy();
-      } else if (cliResults.backend === "fastapi" || cliResults.backend === "watsonx") {
-        cliResults.flags.proxy = true;
-      }
+        cliResults.backend = backend as AvailableBackends;
 
-      if (cliResults.backend === "fastapi") {
-        if (!cliResults.flags.noVenv) {
-          cliResults.flags.noVenv = !(await promptSetupVenv());
-          if (!cliResults.flags.noVenv) {
-            const pythonVersions = await getUserPythonVersions();
+        const proxy =
+          backend === "fastapi"
+            ? true
+            : await p.confirm({
+                message: "Would you like us to setup a proxy on /api for you?",
+                initialValue: true,
+              });
 
-            if (!pythonVersions || !pythonVersions[0]) {
-              logger.warn(
-                "We couldn't find any python versions on your system (Maybe we just don't support your OS yet)",
-              );
-              cliResults.flags.noVenv = true;
-            } else {
-              cliResults.pythonVersion = await promptPythonVersion(pythonVersions);
-              logger.success(
-                `Any time! We'll use ${cliResults.pythonVersion.version} on path: ${cliResults.pythonVersion.path}`,
-              );
-            }
-          }
+        cliResults.flags.proxy = proxy as boolean;
+
+        if (!cliResults.flags.noInstall) {
+          const pkgManager = getUserPkgManager();
+          const command = pkgManager === "yarn" ? pkgManager : `${pkgManager} install`;
+          const install = await p.confirm({
+            message: `Would you like us to run ${chalk.magenta(`'${command}'`)}?`,
+            initialValue: true,
+          });
+          cliResults.flags.noInstall = !install;
+        }
+
+        if (!cliResults.flags.noGit) {
+          const git = await p.confirm({
+            message: "Initialize a new git repository?",
+            initialValue: true,
+          });
+          cliResults.flags.noGit = !git;
+        }
+
+        if (cliResults.backend === "fastapi") {
+          await handleFastAPISetup(cliResults);
         }
       }
-
-      if (cliResults.backend === "watsonx") {
-        cliResults.envVars = await promptEnvVars();
-
-        if (!cliResults.flags.noVenv) {
-          cliResults.flags.noVenv = !(await promptSetupVenv());
-          if (!cliResults.flags.noVenv) {
-            const pythonVersions = await getUserPythonVersions();
-            const poetryInstalled = await checkForPoetry();
-
-            const python311Installed = pythonVersions
-              ? pythonVersions.some((version) => version.version?.includes("3.11."))
-              : false;
-
-            if (!python311Installed) {
-              logger.warn(
-                "This backend requires Python 3.11, but we couldn't find it on your system. Please install and follow the Backend README to setup your environment.",
-              );
-              cliResults.flags.noVenv = true;
-            }
-            if (!poetryInstalled) {
-              logger.warn(
-                "This backend requires Poetry, but we couldn't find it on your system. Please install and follow the Backend README to setup your environment.",
-              );
-              cliResults.flags.noVenv = true;
-            }
-          }
-        }
-      }
-
-      if (!cliResults.flags.noInstall) {
-        cliResults.flags.noInstall = !(await promptInstall());
-      }
-
-      if (!cliResults.flags.noGit) {
-        cliResults.flags.noGit = !(await promptGit());
+      // install dependencies for full-stack template
+      if (!cliResults.flags.noInstall && cliResults.template.value === "full-stack-cen-template") {
+        const pkgManager = getUserPkgManager();
+        const command = pkgManager === "yarn" ? pkgManager : `${pkgManager} install`;
+        const setupEnv = await p.confirm({
+          message: `Would you like us to run ${chalk.magenta(`'${command}'`)} and ${chalk.magenta(
+            "'uv sync'",
+          )}?`,
+          initialValue: true,
+        });
+        cliResults.flags.noInstall = !setupEnv;
       }
     }
   } catch (err) {
-    // If the user is not calling create-cen-app from an interactive terminal, inquirer will throw an error with isTTYError = true
-    // If this happens, we catch the error, tell the user what has happened, and then continue to run the program with a default CEN app
-    // Otherwise we have to do some fancy namespace extension logic on the Error type which feels overkill for one line
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (err instanceof Error && (err as any).isTTYError) {
-      logger.warn(`
-  ${CREATE_CEN_APP} needs an interactive terminal to provide options`);
+    if (err instanceof Error && "isTTYError" in err) {
+      p.log.warn(`\n${CREATE_CEN_APP} needs an interactive terminal to provide options`);
 
-      const { shouldContinue } = await inquirer.prompt<{
-        shouldContinue: boolean;
-      }>({
-        name: "shouldContinue",
-        type: "confirm",
-        message: `Continue scaffolding a default CEN app?`,
-        default: true,
+      const shouldContinue = await p.confirm({
+        message: "Continue scaffolding a default CEN app?",
+        initialValue: true,
       });
 
       if (!shouldContinue) {
-        logger.info("Exiting...");
+        p.log.info("Exiting...");
         process.exit(0);
       }
 
-      logger.info(`Bootstrapping a default CEN app in ./${cliResults.appName}`);
+      p.log.info(`Bootstrapping a default CEN app in ./${cliResults.appName}`);
     } else {
       throw err;
     }
@@ -299,182 +235,46 @@ export const runCli = async () => {
   return cliResults;
 };
 
-const promptAppName = async (): Promise<string> => {
-  const { appName } = await inquirer.prompt<Pick<CliResults, "appName">>({
-    name: "appName",
-    type: "input",
-    message: "What will your project be called?",
-    default: defaultOptions.appName,
-    validate: validateAppName,
-    transformer: (input: string) => {
-      return input.trim();
-    },
-  });
+const handleFastAPISetup = async (cliResults: CliResults): Promise<void> => {
+  if (!cliResults.flags.noVenv) {
+    const setupVenv = await p.confirm({
+      message: `Would you like us to setup your ${chalk.magenta(
+        "python environment (venv)",
+      )}? ${chalk.yellow("experimental")}`,
+      initialValue: true,
+    });
 
-  return appName;
-};
+    cliResults.flags.noVenv = !setupVenv;
 
-const promptDisplayName = async (): Promise<string> => {
-  const { displayName } = await inquirer.prompt<Pick<CliResults, "displayName">>({
-    name: "displayName",
-    type: "input",
-    message: "What should be the displayed Name in your Application?",
-    default: defaultOptions.displayName,
-    // validate: validateAppName, TODO: add validation
-    transformer: (input: string) => {
-      return input.trim();
-    },
-  });
+    if (!cliResults.flags.noVenv) {
+      const pythonVersions = await getUserPythonVersions();
 
-  return displayName;
-};
+      const pythonVersionSupported = pythonVersions?.some((version) => {
+        const match = version.version?.match(/3\.(\d+)/);
+        if (!match) return false;
+        const minorVersion = Number(match[1]);
+        return minorVersion >= 10;
+      });
 
-const promptLanguage = async (): Promise<void> => {
-  const { language } = await inquirer.prompt<{ language: string }>({
-    name: "language",
-    type: "list",
-    message: "Will you be using TypeScript or JavaScript?",
-    choices: [
-      { name: "TypeScript", value: "typescript", short: "TypeScript" },
-      { name: "JavaScript", value: "javascript", short: "JavaScript" },
-    ],
-    default: "typescript",
-  });
+      if (!pythonVersionSupported) {
+        p.log.warn(
+          "This backend requires Python 3.10 or higher but we couldn't find it on your system. Please install and follow the Backend README to setup your environment.",
+        );
+        cliResults.flags.noVenv = true;
+      }
 
-  if (language === "javascript") {
-    logger.error("Wrong answer, using TypeScript instead...");
-  } else {
-    logger.success("Good choice! Using TypeScript!");
-  }
-};
+      if (!cliResults.flags.noVenv && pythonVersions?.[0]) {
+        const pythonVersion = await p.select({
+          message:
+            "Which python version would you like to use? We found these Versions on your system:",
+          options: pythonVersions.map((version) => ({
+            label: `${version.version} - ${version.path}`,
+            value: version,
+          })),
+        });
 
-// TODO: add more supported packages
-const promptPackages = async (): Promise<AvailablePackages[]> => {
-  const { packages } = await inquirer.prompt<Pick<CliResults, "packages">>({
-    name: "packages",
-    type: "checkbox",
-    message: "Which packages would you like to enable?",
-    choices: availablePackages
-      .filter((pkg) => pkg !== "envVariables" && pkg !== "trpc") // don't prompt for env-vars or trpc (this one is prompted in backend selection)
-      .map((pkgName) => ({
-        name: pkgName,
-        checked: false,
-      })),
-  });
-
-  return packages;
-};
-
-const promptBackends = async (): Promise<AvailableBackends> => {
-  const { backend } = await inquirer.prompt<{ backend: AvailableBackends }>({
-    name: "backend",
-    type: "list",
-    message: "Which backend would you like to use?",
-    choices: backendsDisplayList.map((backendDisplay: BackendDisplay) => backendDisplay),
-    default: "default",
-  });
-
-  return backend;
-};
-
-// asks if frontend dependencies should be installed
-const promptInstall = async (): Promise<boolean> => {
-  const pkgManager = getUserPkgManager();
-
-  const { install } = await inquirer.prompt<{ install: boolean }>({
-    name: "install",
-    type: "confirm",
-    message: `Would you like us to run ${chalk.magenta(
-      `'${pkgManager}` + (pkgManager === "yarn" ? `'?` : ` install'?`),
-    )}`,
-    default: true,
-  });
-
-  if (install) {
-    logger.success("Alright. We'll install the dependencies for you!");
-  } else {
-    if (pkgManager === "yarn") {
-      logger.info(`No worries. You can run '${pkgManager}' later to install the dependencies.`);
-    } else {
-      logger.info(
-        `No worries. You can run '${pkgManager} install' later to install the dependencies.`,
-      );
+        cliResults.pythonVersion = pythonVersion as PythonVersion;
+      }
     }
   }
-
-  return install;
-};
-
-const promptProxy = async (): Promise<boolean> => {
-  const { proxy } = await inquirer.prompt<{ proxy: boolean }>({
-    name: "proxy",
-    type: "confirm",
-    message: `Would you like us to setup a proxy on /api for you?`,
-    default: true,
-  });
-
-  return proxy;
-};
-
-// only for FastAPI
-const promptSetupVenv = async (): Promise<boolean> => {
-  const { install: setupVenv } = await inquirer.prompt<{ install: boolean }>({
-    name: "install",
-    type: "confirm",
-    message: `Would you like us to setup your ${chalk.magenta(
-      "python environment (venv)",
-    )}? ${chalk.yellow("experimental")}`,
-    default: true,
-  });
-
-  return setupVenv;
-};
-
-const promptEnvVars = async (): Promise<Record<AvailableEnvVars, string>> => {
-  logger.info(
-    chalk.bold("You can set values for the following environment variables (Leave empty to skip):"),
-  );
-  const envVars: Record<AvailableEnvVars, string> = {};
-  for (const envVar of availableEnvVars) {
-    const { value } = await inquirer.prompt<{ value: string }>({
-      name: "value",
-      type: "input",
-      message: `${envVar}=`,
-    });
-    envVars[envVar] = value;
-  }
-
-  return envVars;
-};
-
-const promptPythonVersion = async (availableVersions: PythonVersion[]): Promise<PythonVersion> => {
-  const { pythonVersion } = await inquirer.prompt<{ pythonVersion: PythonVersion }>({
-    name: "pythonVersion",
-    type: "list",
-    message: `Which python version would you like to use? We found these Versions on your system:`,
-    choices: availableVersions.map((version) => ({
-      name: `${version.version} - ${version.path}`,
-      value: version,
-    })),
-    // default: true,
-  });
-
-  return pythonVersion;
-};
-
-const promptGit = async (): Promise<boolean> => {
-  const { git } = await inquirer.prompt<{ git: boolean }>({
-    name: "git",
-    type: "confirm",
-    message: "Initialize a new git repository?",
-    default: true,
-  });
-
-  if (git) {
-    logger.success("Nice one! Initializing repository!");
-  } else {
-    logger.info("Sounds good! You can come back and run git init later.");
-  }
-
-  return git;
 };

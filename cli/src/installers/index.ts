@@ -20,11 +20,11 @@ export const availablePackages = [
 ] as const;
 export type AvailablePackages = (typeof availablePackages)[number];
 
-export const availableBackends = ["default", "trpc", "fastapi", "watsonx", "go"] as const;
+export const availableBackends = ["default", "trpc", "fastapi", "go"] as const;
 export type AvailableBackends = (typeof availableBackends)[number];
 
-export const availableEnvVars = ["IBM_API_KEY", "WATSONX_PROJECT_ID"];
-export type AvailableEnvVars = (typeof availableEnvVars)[number];
+// export const availableEnvVars = ["IBM_API_KEY", "WATSONX_PROJECT_ID"];
+// export type AvailableEnvVars = (typeof availableEnvVars)[number];
 
 export interface InstallerOptions {
   frontendDir: string;
@@ -101,9 +101,26 @@ export const backendsDisplayList: BackendDisplay[] = [
     value: "fastapi",
     short: "FastAPI",
   },
+];
+
+export type TemplateDisplay = {
+  value: AvailableTemplates;
+  name: string;
+  description: string;
+};
+
+export const templateDisplayList: TemplateDisplay[] = [
   {
-    name: "WatsonX RAG Backend (FastAPI) <BETA>",
-    value: "watsonx",
-    short: "WatsonX",
+    value: "full-stack-cen-template",
+    name: "full-stack-cen-template",
+    description: "Feature-rich React/Vite + FastAPI template with auth, database and Docker",
+  },
+  {
+    value: "create-cen-app",
+    name: "original create-cen-app",
+    description:
+      "Lightweight Next.js template with a choice of FastAPI, tRPC or default Next.js API Routes",
   },
 ];
+
+export type AvailableTemplates = "full-stack-cen-template" | "create-cen-app";

@@ -2,6 +2,7 @@
 import { installDependencies } from "./helpers/installDependencies.js";
 import { getVersion } from "./utils/getCENVersion.js";
 import { getNpmVersion, renderVersionWarning } from "./utils/renderVersionWarning.js";
+import * as p from "@clack/prompts";
 import fs from "fs-extra";
 import path from "path";
 import { type PackageJson } from "type-fest";
@@ -10,7 +11,6 @@ import { createProject } from "~/helpers/createProject.js";
 import { initializeGit } from "~/helpers/git.js";
 import { logNextSteps } from "~/helpers/logNextSteps.js";
 import { buildPkgInstallerMap } from "~/installers/index.js";
-import { logger } from "~/utils/logger.js";
 import { parseNameAndPath } from "~/utils/parseNameAndPath.js";
 import { renderTitle } from "~/utils/renderTitle.js";
 
@@ -31,7 +31,8 @@ const main = async () => {
     displayName,
     backend,
     pythonVersion,
-    envVars,
+    template,
+    // envVars,
     flags: { noGit, noInstall, noVenv, proxy },
   } = await runCli();
 
@@ -48,7 +49,8 @@ const main = async () => {
     noInstall,
     noVenv,
     proxy,
-    envVars,
+    template: template.value,
+    // envVars,
     displayName,
   });
 
@@ -60,7 +62,7 @@ const main = async () => {
     spaces: 2,
   });
 
-  if (!noInstall) {
+  if (!noInstall && template.value === "create-cen-app") {
     await installDependencies({ frontendDir });
   }
 
@@ -71,21 +73,23 @@ const main = async () => {
   logNextSteps({
     projectName: appDir,
     packages: usePackages,
+    template: template.value,
     noInstall,
     frontendDir,
     backendDir,
     backend,
+    noVenv,
   });
 
   process.exit(0);
 };
 
 main().catch((err) => {
-  logger.error("Aborting installation...");
+  p.log.error("Aborting installation...");
   if (err instanceof Error) {
-    logger.error(err);
+    p.log.error(err.message);
   } else {
-    logger.error("An unknown error has occurred. Please open an issue on github with the below:");
+    p.log.error("An unknown error has occurred. Please open an issue on github with the below:");
     console.log(err);
   }
   process.exit(1);

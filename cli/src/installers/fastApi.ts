@@ -1,11 +1,10 @@
+import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { execa } from "execa";
 import fs from "fs-extra";
-import ora from "ora";
 import path from "path";
 import { PKG_ROOT } from "~/consts.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
-import { logger } from "~/utils/logger.js";
 
 interface FastApiInstallerOptions {
   backendDir: string;
@@ -31,27 +30,31 @@ export const fastApiInstaller = async ({
   fs.writeFileSync(envDest, envContent, "utf-8");
 
   if (noVenv) {
-    logger.info("Skipping FastAPI environment setup");
+    p.log.info("Skipping FastAPI environment setup");
     return;
   }
 
-  logger.info("Preparing FastAPI environment...");
+  p.log.info("Preparing FastAPI environment...");
 
   // const pythonVersions = await getUserPythonVersions();
   // const pythonVersion = pythonVersions?.[0];
 
-  const spinner = ora(`Creating virtual environment...`).start();
+  const s = p.spinner();
+  s.start("Creating virtual environment...");
   await execa(pythonVersion.path, ["-m", "venv", ".venv"], {
     cwd: destDir,
     stdio: "inherit",
   });
-  spinner.succeed(chalk.green(`Successfully created virtual environment for FastAPI`));
+  s.stop();
+  p.log.success(`Successfully created virtual environment for ${chalk.green.bold("FastAPI")}`);
 
   // instal python requirements in venv
-  const spinner2 = ora(`Installing python requirements...`).start();
+  const s2 = p.spinner();
+  s2.start("Installing python requirements...");
   await execa(".venv/bin/pip", ["install", "-r", "requirements.txt"], {
     cwd: destDir,
     stdio: "inherit",
   });
-  spinner2.succeed(chalk.green(`Successfully installed python requirements`));
+  s2.stop();
+  p.log.success(`Successfully installed python requirements`);
 };

@@ -1,9 +1,12 @@
+import * as p from "@clack/prompts";
 import chalk from "chalk";
-import { log } from "console";
 import { DEFAULT_APP_NAME } from "~/consts.js";
-import { AvailableBackends, type InstallerOptions } from "~/installers/index.js";
+import {
+  AvailableBackends,
+  AvailableTemplates,
+  type InstallerOptions,
+} from "~/installers/index.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
-import { logger } from "~/utils/logger.js";
 
 interface LogNextStepsProps {
   projectName: string;
@@ -12,7 +15,8 @@ interface LogNextStepsProps {
   packages?: InstallerOptions["packages"];
   backend: AvailableBackends;
   noInstall?: boolean;
-  noVenv?: boolean;
+  noVenv: boolean;
+  template: AvailableTemplates;
 }
 
 // This logs the next steps that the user should take in order to advance the project
@@ -23,46 +27,71 @@ export const logNextSteps = ({
   frontendDir,
   noInstall,
   noVenv,
+  template,
 }: LogNextStepsProps) => {
+  p.log.info(`${chalk.bold.green("All done!")} 🎉\n`);
+
+  if (template === "create-cen-app") {
+    createCenAppNextSteps({
+      projectName,
+      noVenv,
+      frontendDir: frontendDir ?? "",
+      noInstall: noInstall ?? true,
+      backend,
+    });
+  }
+
+  if (template === "full-stack-cen-template") {
+    createFullStackCenTemplateNextSteps({ projectName });
+  }
+  p.log.message("");
+  p.outro(`${chalk.bold.green("Have fun building!")} 🚀`);
+};
+
+const createCenAppNextSteps = ({
+  projectName,
+  noVenv,
+  frontendDir,
+  noInstall,
+  backend,
+}: {
+  projectName: string;
+  noVenv: boolean;
+  frontendDir: string;
+  noInstall: boolean;
+  backend: AvailableBackends;
+}) => {
   const pkgManager = getUserPkgManager();
-
   const usingExternalBackend = backend !== "default" && backend !== "trpc";
-
-  logger.info("Next steps:\n");
+  let steps = `${chalk.bold.cyan("Next steps:")}\n\n`;
 
   if (usingExternalBackend) {
     if (noVenv) {
-      logger.info(`  --setup venv and install dependencies--`);
-      // logger.info(`  cd ${projectName}-backend`);
-      // logger.info(`  python -m venv venv`);
-      // logger.info(`  source venv/bin/activate`);
-      // logger.info(`  pip install -r requirements.txt`);
+      steps += `  ${chalk.cyan("--setup venv and install dependencies--")}\n`;
     } else {
-      usingExternalBackend && logger.info(`  cd ${projectName}/backend`);
-      if (backend === "watsonx") {
-        logger.info(`  poetry run dev\n`);
-      } else {
-        usingExternalBackend && logger.info(`  ./run\n`);
-      }
-      usingExternalBackend && logger.warn(`  (in another terminal window:)\n`);
-      logger.info(`  cd ${frontendDir}`);
+      steps += `  ${chalk.cyan("cd")} ${projectName}/backend\n  ${chalk.cyan(
+        "./run",
+      )}\n\n  ${chalk.yellow("In another terminal window:")}\n\n  ${chalk.cyan(
+        "cd",
+      )} ${frontendDir}\n`;
     }
+  } else if (projectName !== ".") {
+    steps += `  ${chalk.cyan("cd")} ${projectName}\n`;
   }
-
-  !usingExternalBackend && projectName !== "." && logger.info(`  cd ${projectName}`);
 
   if (noInstall) {
     // To reflect yarn's default behavior of installing packages when no additional args provided
-    if (pkgManager === "yarn") {
-      logger.info(`  ${pkgManager}`);
-    } else {
-      logger.info(`  ${pkgManager} install`);
-    }
+    steps += `  ${chalk.cyan(pkgManager)}${pkgManager !== "yarn" ? " install" : ""}\n`;
   }
 
-  // if (packages?.prisma.inUse) {
-  //   logger.info(`  ${pkgManager === "npm" ? "npx" : pkgManager} prisma db push`);
-  // }
+  steps += `  ${chalk.cyan(pkgManager === "npm" ? "npm run" : pkgManager)} dev\n`;
+  p.log.info(steps);
+};
 
-  logger.info(`  ${pkgManager === "npm" ? "npm run" : pkgManager} dev\n`);
+const createFullStackCenTemplateNextSteps = ({ projectName }: { projectName: string }) => {
+  p.log.info(
+    `${chalk.bold.cyan("Next steps:")}\n\n  ${chalk.cyan("cd")} ${projectName}\n  ${chalk.cyan(
+      "docker compose watch",
+    )}`,
+  );
 };

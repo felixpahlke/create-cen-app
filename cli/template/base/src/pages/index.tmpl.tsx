@@ -12,10 +12,7 @@ import useCounter from "~/atoms/useCounter";
 // $with: trpc
 import { api } from "~/utils/api";
 // $end: trpc
-// $with: watsonx
-import { useState } from "react";
-import { useStream } from "~/hooks/useStream";
-// $end: watsonx
+
 
 
 
@@ -28,27 +25,10 @@ const Home: NextPage = () => {
   const { data, isLoading } = api.example.hello.useQuery({ text: "from tRPC" });
   // $end: trpc
 
-  // $with: watsonx
-  const [prompt, setPrompt] = useState("");
-
-  const getStream = async (input: { prompt: string }, signal: AbortSignal) => {
-    const response = await fetch(`/api/generation/stream?prompt=${input.prompt}`, {
-      signal,
-    });
-    return response;
-  };
-
-  const { start, stop, text, error, isLoading, isProcessing, isError } = useStream({
-    getStream,
-    onSuccess: (text) => {
-      console.log(text);
-    },
-  });
-
-  // $end: watsonx
 
 
-  // $with: extBackend && !watsonx
+
+  // $with: extBackend
   const fetchMessage = async () => {
     const res = await fetch("/api/example/hello");
     const data = await res.json();
@@ -56,7 +36,7 @@ const Home: NextPage = () => {
   };
 
   const { data, isLoading } = useQuery({ queryKey: ["message"], queryFn: fetchMessage});
-  // $end: extBackend && !watsonx
+  // $end: extBackend
 
   return (
     <>
@@ -81,7 +61,7 @@ const Home: NextPage = () => {
           CEN - <strong>[project-name]</strong>
         </h1>
 
-        {/* $with: !watsonx && trpc || extBackend */}
+        {/* $with: trpc || extBackend */}
         <p
           // $with: tailwind
           className="mt-10 text-2xl"
@@ -97,47 +77,7 @@ const Home: NextPage = () => {
           {isLoading ? "Loading query" : data?.message}
           {/* $end: extBackend */}
         </p>
-        {/* $end: !watsonx && trpc || extBackend */}
-
-        {/* $with: watsonx */}
-        <input
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter a prompt..."
-          // $with: tailwind
-          className="mt-10 w-full max-w-3xl rounded-md border border-gray-300 p-2"
-          // $end: tailwind
-        />
-
-        <button
-          onClick={() => start({ prompt })}
-          disabled={isProcessing}
-          // $with: tailwind
-          className="mt-2 bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed"
-          // $end: tailwind
-        >
-          Generate
-        </button>
-
-        <button
-          onClick={() => stop()}
-          disabled={!isProcessing}
-          // $with: tailwind
-          className="mt-2 bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 disabled:cursor-not-allowed"
-          // $end: tailwind
-        >
-          Stop
-        </button>
-
-        <p 
-        // $with: tailwind
-        className="my-4 w-full max-w-3xl whitespace-pre-wrap"
-        // $end: tailwind
-        >
-          {isLoading ? "Waiting for stream to start..." : text}
-          {isError ? error : ""}
-        </p>
-        {/* $end: watsonx */}
+        {/* $end: trpc || extBackend */}
 
 
         {/* $with: recoil && !carbon */}

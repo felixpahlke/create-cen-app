@@ -1,12 +1,11 @@
 import { AvailableEnvVars } from "./index.js";
+import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { execa } from "execa";
 import fs from "fs-extra";
-import ora from "ora";
 import path from "path";
 import { PKG_ROOT, WATSONX_BRANCH, WATSONX_REPO } from "~/consts.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
-import { logger } from "~/utils/logger.js";
 import replaceTextInFiles from "~/utils/replaceTextInFiles.js";
 
 interface WatsonXInstallerOptions {
@@ -25,17 +24,20 @@ export const watsonxInstaller = async ({
   envVars,
 }: WatsonXInstallerOptions) => {
   // pull the repo from WATSONX_REPO into backend folder
-  let spinner = ora(`Cloning WatsonX repository...`).start();
+  const s = p.spinner();
+  s.start(`Cloning WatsonX repository...`);
   await execa("git", ["clone", "-b", WATSONX_BRANCH, WATSONX_REPO, backendDir], {
     cwd: PKG_ROOT,
     stdio: "inherit",
   });
-  spinner.succeed(chalk.green(`Successfully cloned WatsonX repository`));
+  s.stop();
+  p.log.success(`Successfully cloned ${chalk.green.bold("WatsonX")} repository\n`);
 
   // delete .git folder
-  spinner = ora(`Cleaning up...`).start();
+  s.start(`Cleaning up...`);
   fs.removeSync(path.join(backendDir, ".git"));
-  spinner.succeed(chalk.green(`Successfully cleaned up`));
+  s.stop();
+  p.log.success(`Successfully cleaned up\n`);
 
   // create .env file
   const envDest = path.join(backendDir, ".env");
@@ -58,11 +60,11 @@ export const watsonxInstaller = async ({
   fs.copySync(useStreamSrc, useStreamDest);
 
   if (noVenv) {
-    logger.info("Skipping FastAPI environment setup");
+    p.log.info("Skipping FastAPI environment setup");
     return;
   }
 
-  logger.info("Preparing Python environment...");
+  p.log.info("Preparing Python environment...");
 
   const poetryInstalled = await execa("poetry", ["--version"])
     .then(() => true)
@@ -73,18 +75,18 @@ export const watsonxInstaller = async ({
     .catch(() => false);
 
   if (!poetryInstalled) {
-    logger.error("Poetry is not installed. Please install poetry and follow the Backend README.");
+    p.log.error("Poetry is not installed. Please install poetry and follow the Backend README.");
     return;
   }
 
   if (!python311Installed) {
-    logger.error(
+    p.log.error(
       "Python 3.11 is not installed. Please install Python 3.11 and follow the Backend README.",
     );
     return;
   }
 
-  spinner = ora(`Creating virtual environment...`).start();
+  s.start(`Creating virtual environment...`);
 
   await execa("poetry", ["config", "virtualenvs.in-project", "true"], {
     cwd: backendDir,
@@ -102,7 +104,8 @@ export const watsonxInstaller = async ({
     stdio: "inherit",
   });
 
-  spinner.succeed(chalk.green(`Successfully installed python requirements`));
+  s.stop();
+  p.log.success(`Successfully installed ${chalk.green.bold("python")} requirements\n`);
 
   //   await execa(pythonVersion.path, ["-m", "venv", ".venv"], {
   //     cwd: backendDir,

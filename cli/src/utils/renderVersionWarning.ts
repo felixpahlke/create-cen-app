@@ -1,5 +1,5 @@
 import { getVersion } from "./getCENVersion.js";
-import { logger } from "./logger.js";
+import * as p from "@clack/prompts";
 import { execSync } from "child_process";
 import https from "https";
 
@@ -10,22 +10,19 @@ export const renderVersionWarning = (npmVersion: string) => {
   //   console.log("npm", npmVersion);
 
   if (currentVersion.includes("beta")) {
-    logger.warn("  You are using a beta version of create-cen-app.");
-    logger.warn("  Please report any bugs you encounter.");
+    p.log.warn("  You are using a beta version of create-cen-app.");
+    p.log.warn("  Please report any bugs you encounter.");
   } else if (currentVersion.includes("next")) {
-    logger.warn(
+    p.log.warn(
       "  You are running create-cen-app with the @next tag which is no longer maintained.",
     );
-    logger.warn("  Please run the CLI with @latest instead.");
+    p.log.warn("  Please run the CLI with @latest instead.");
   } else if (currentVersion !== npmVersion) {
-    logger.warn("  You are using an outdated version of create-cen-app.");
-    logger.warn(
-      "  Your version:",
-      currentVersion + ".",
-      "Latest version in the npm registry:",
-      npmVersion,
+    p.log.warn("  You are using an outdated version of create-cen-app.");
+    p.log.warn(
+      `  Your version: ${currentVersion}. Latest version in the npm registry: ${npmVersion}`,
     );
-    logger.warn("  Please run the CLI with @latest to get the latest updates.");
+    p.log.warn("  Please run the CLI with @latest to get the latest updates.");
   }
   console.log("");
 };
@@ -44,22 +41,19 @@ type DistTagsBody = {
 function checkForLatestVersion(): Promise<string> {
   return new Promise((resolve, reject) => {
     https
-      .get(
-        "https://registry.npmjs.org/-/package/create-cen-app/dist-tags",
-        (res) => {
-          if (res.statusCode === 200) {
-            let body = "";
-            res.on("data", (data) => (body += data));
-            res.on("end", () => {
-              resolve((JSON.parse(body) as DistTagsBody).latest);
-            });
-          } else {
-            reject();
-          }
-        },
-      )
+      .get("https://registry.npmjs.org/-/package/create-cen-app/dist-tags", (res) => {
+        if (res.statusCode === 200) {
+          let body = "";
+          res.on("data", (data) => (body += data));
+          res.on("end", () => {
+            resolve((JSON.parse(body) as DistTagsBody).latest);
+          });
+        } else {
+          reject();
+        }
+      })
       .on("error", () => {
-        // logger.error("Unable to check for latest version.");
+        // p.log.error("Unable to check for latest version.");
         reject();
       });
   });
