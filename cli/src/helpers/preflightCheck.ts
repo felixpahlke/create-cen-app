@@ -43,7 +43,7 @@ export const preflightCheck = async ({
         ],
       });
 
-      if (overwriteDir === "abort") {
+      if (p.isCancel(overwriteDir) || overwriteDir === "abort") {
         p.log.error("Aborting installation...");
         process.exit(1);
       }
@@ -56,7 +56,7 @@ export const preflightCheck = async ({
         initialValue: false,
       });
 
-      if (!confirmOverwriteDir) {
+      if (p.isCancel(confirmOverwriteDir) || !confirmOverwriteDir) {
         p.log.error("Aborting installation...");
         process.exit(1);
       }

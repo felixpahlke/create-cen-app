@@ -1,5 +1,4 @@
 import * as p from "@clack/prompts";
-import chalk from "chalk";
 import { execa } from "execa";
 import { getUserPkgManager, type PackageManager } from "~/utils/getUserPkgManager.js";
 

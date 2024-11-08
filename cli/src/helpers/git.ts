@@ -73,6 +73,11 @@ export const initializeGit = async (projectDir: string) => {
       initialValue: false,
     });
 
+    if (p.isCancel(overwriteGit)) {
+      p.cancel("Operation cancelled. Skipping Git initialization.");
+      return;
+    }
+
     if (!overwriteGit) {
       p.log.info("Skipping Git initialization.");
       return;
@@ -87,6 +92,11 @@ export const initializeGit = async (projectDir: string) => {
       )} "${dirName}" is already in a git worktree. Would you still like to initialize a new git repository in this directory?`,
       initialValue: false,
     });
+
+    if (p.isCancel(initializeChildGitRepo)) {
+      p.cancel("Operation cancelled. Skipping Git initialization.");
+      return;
+    }
 
     if (!initializeChildGitRepo) {
       p.log.info("Skipping Git initialization.");

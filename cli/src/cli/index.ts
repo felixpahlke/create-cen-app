@@ -1,4 +1,5 @@
 import * as p from "@clack/prompts";
+import { isCancel } from "@clack/prompts";
 import chalk from "chalk";
 import { Command } from "commander";
 import { CREATE_CEN_APP, DEFAULT_APP_NAME, DEFAULT_DISPLAY_NAME } from "~/consts.js";
@@ -118,6 +119,11 @@ export const runCli = async () => {
         initialValue: templateDisplayList[0]!,
       });
 
+      if (isCancel(template)) {
+        p.cancel("Operation cancelled");
+        process.exit(0);
+      }
+
       cliResults.template = template as TemplateDisplay;
 
       if (!cliProvidedName) {
@@ -127,6 +133,10 @@ export const runCli = async () => {
           placeholder: defaultOptions.appName,
           validate: validateAppName,
         });
+        if (isCancel(appName)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
         if (appName) cliResults.appName = appName as string;
       }
 
@@ -139,6 +149,11 @@ export const runCli = async () => {
           ],
           initialValue: "typescript",
         });
+
+        if (isCancel(language)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
 
         if (language === "javascript") {
           p.note(chalk.redBright("Wrong answer, using TypeScript instead"));
@@ -154,6 +169,11 @@ export const runCli = async () => {
             })),
         });
 
+        if (isCancel(packages)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
+
         cliResults.packages = packages as AvailablePackages[];
 
         const backend = await p.select({
@@ -165,6 +185,11 @@ export const runCli = async () => {
           initialValue: "default",
         });
 
+        if (isCancel(backend)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
+
         cliResults.backend = backend as AvailableBackends;
 
         const proxy =
@@ -175,6 +200,11 @@ export const runCli = async () => {
                 initialValue: true,
               });
 
+        if (isCancel(proxy)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
+
         cliResults.flags.proxy = proxy as boolean;
 
         if (!cliResults.flags.noInstall) {
@@ -184,6 +214,12 @@ export const runCli = async () => {
             message: `Would you like us to run ${chalk.magenta(`'${command}'`)}?`,
             initialValue: true,
           });
+
+          if (isCancel(install)) {
+            p.cancel("Operation cancelled");
+            process.exit(0);
+          }
+
           cliResults.flags.noInstall = !install;
         }
 
@@ -192,6 +228,12 @@ export const runCli = async () => {
             message: "Initialize a new git repository?",
             initialValue: true,
           });
+
+          if (isCancel(git)) {
+            p.cancel("Operation cancelled");
+            process.exit(0);
+          }
+
           cliResults.flags.noGit = !git;
         }
 
@@ -209,6 +251,12 @@ export const runCli = async () => {
           )}?`,
           initialValue: true,
         });
+
+        if (isCancel(setupEnv)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
+
         cliResults.flags.noInstall = !setupEnv;
       }
     }
@@ -220,6 +268,11 @@ export const runCli = async () => {
         message: "Continue scaffolding a default CEN app?",
         initialValue: true,
       });
+
+      if (isCancel(shouldContinue)) {
+        p.cancel("Operation cancelled");
+        process.exit(0);
+      }
 
       if (!shouldContinue) {
         p.log.info("Exiting...");
@@ -243,6 +296,11 @@ const handleFastAPISetup = async (cliResults: CliResults): Promise<void> => {
       )}? ${chalk.yellow("experimental")}`,
       initialValue: true,
     });
+
+    if (isCancel(setupVenv)) {
+      p.cancel("Operation cancelled");
+      process.exit(0);
+    }
 
     cliResults.flags.noVenv = !setupVenv;
 
@@ -272,6 +330,11 @@ const handleFastAPISetup = async (cliResults: CliResults): Promise<void> => {
             value: version,
           })),
         });
+
+        if (isCancel(pythonVersion)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
 
         cliResults.pythonVersion = pythonVersion as PythonVersion;
       }
