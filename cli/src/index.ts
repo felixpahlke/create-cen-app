@@ -41,7 +41,7 @@ const main = async () => {
   // e.g. dir/@mono/app returns ["@mono/app", "dir/app"]
   const [scopedAppName, appDir] = parseNameAndPath(appName);
 
-  const { projectDir, frontendDir, backendDir } = await createProject({
+  const { projectDir, frontendDir, backendDir, missingDependencies } = await createProject({
     projectName: appDir,
     packages: usePackages,
     backend,
@@ -79,6 +79,7 @@ const main = async () => {
     backendDir,
     backend,
     noVenv,
+    missingDependencies,
   });
 
   process.exit(0);

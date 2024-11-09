@@ -26,10 +26,11 @@ interface CreateProjectOptions {
   // importAlias: string;
 }
 
-type Directories = {
+type CreateProjectResult = {
   frontendDir: string;
   backendDir: string;
   projectDir: string;
+  missingDependencies: string[];
 };
 
 export const createProject = async ({
@@ -43,7 +44,7 @@ export const createProject = async ({
   // envVars,
   proxy,
   template,
-}: CreateProjectOptions) => {
+}: CreateProjectOptions): Promise<CreateProjectResult> => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
 
@@ -60,12 +61,14 @@ export const createProject = async ({
     p.log.info(`\nUsing: ${chalk.cyan.bold(pkgManager)}\n`);
   }
 
-  await preflightCheck({
+  const { noInstall: shouldSetNoInstall, missingDependencies } = await preflightCheck({
     projectDir,
     projectName,
     template,
     noInstall,
   });
+
+  noInstall = shouldSetNoInstall;
 
   if (template === "create-cen-app") {
     // Bootstraps the base next.js application
@@ -105,5 +108,5 @@ export const createProject = async ({
     await fullStackInstaller({ backendDir, frontendDir, projectDir, projectName, noInstall });
   }
 
-  return { frontendDir, backendDir, projectDir } as Directories;
+  return { frontendDir, backendDir, projectDir, missingDependencies };
 };

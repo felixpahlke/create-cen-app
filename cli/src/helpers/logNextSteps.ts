@@ -17,6 +17,7 @@ interface LogNextStepsProps {
   noInstall?: boolean;
   noVenv: boolean;
   template: AvailableTemplates;
+  missingDependencies: string[];
 }
 
 // This logs the next steps that the user should take in order to advance the project
@@ -28,6 +29,7 @@ export const logNextSteps = ({
   noInstall,
   noVenv,
   template,
+  missingDependencies,
 }: LogNextStepsProps) => {
   p.log.info(`${chalk.bold.green("All done!")} 🎉\n`);
 
@@ -42,7 +44,7 @@ export const logNextSteps = ({
   }
 
   if (template === "full-stack-cen-template") {
-    createFullStackCenTemplateNextSteps({ projectName });
+    createFullStackCenTemplateNextSteps({ projectName, missingDependencies });
   }
   p.log.message("");
   p.outro(`${chalk.bold.green("Have fun building!")} 🚀`);
@@ -88,10 +90,18 @@ const createCenAppNextSteps = ({
   p.log.info(steps);
 };
 
-const createFullStackCenTemplateNextSteps = ({ projectName }: { projectName: string }) => {
+const createFullStackCenTemplateNextSteps = ({
+  projectName,
+  missingDependencies,
+}: {
+  projectName: string;
+  missingDependencies: string[];
+}) => {
   p.log.info(
-    `${chalk.bold.cyan("Next steps:")}\n\n  ${chalk.cyan("cd")} ${projectName}\n  ${chalk.cyan(
-      "docker compose watch",
-    )}`,
+    `${chalk.bold.cyan("Next steps:")}\n\n${
+      missingDependencies.length > 0
+        ? `  ${chalk.yellow("Install missing dependencies:")} ${missingDependencies.join(", ")}\n\n`
+        : ""
+    }  ${chalk.cyan("cd")} ${projectName}\n  ${chalk.cyan("docker compose watch")}`,
   );
 };

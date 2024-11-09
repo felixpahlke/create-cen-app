@@ -12,12 +12,17 @@ interface PreflightCheckOptions {
   noInstall: boolean;
 }
 
+interface PreflightCheckResult {
+  noInstall: boolean;
+  missingDependencies: string[];
+}
+
 export const preflightCheck = async ({
   projectDir,
   projectName,
   template,
   noInstall,
-}: PreflightCheckOptions) => {
+}: PreflightCheckOptions): Promise<PreflightCheckResult> => {
   if (fs.existsSync(projectDir)) {
     if (fs.readdirSync(projectDir).length === 0) {
       if (projectName !== ".")
@@ -68,68 +73,99 @@ export const preflightCheck = async ({
     }
   }
 
+  let shouldSetNoInstall = noInstall;
+  let missingDependencies: string[] = [];
+  let missingCriticalDependencies: string[] = [];
+
   if (template === "full-stack-cen-template") {
     p.log.info("Checking for dependencies...\n");
 
     const uvInstalled = await checkIfUvInstalled();
     if (!uvInstalled) {
-      if (!noInstall) {
-        p.log.error("❌ uv is not installed. Please install uv and try again.");
-        p.log.info(
-          "Getting started with uv: https://docs.astral.sh/uv/getting-started/installation/",
-        );
-        process.exit(1);
-      } else {
-        p.log.warn("⚠️ uv is not installed. You may need to install it later.");
-      }
+      missingCriticalDependencies.push("uv");
+      p.log.error(chalk.red("❌ uv is not installed"));
+      p.log.message(
+        chalk.cyan.bold("Install uv: https://docs.astral.sh/uv/getting-started/installation/"),
+      );
     } else {
-      p.log.info("✅ uv is installed");
+      p.log.success(`${chalk.green("uv is installed")}`);
     }
 
     const dockerInstalled = await checkIfDockerInstalled();
     if (!dockerInstalled) {
-      p.log.warn("⚠️ Docker CLI is not installed. You may need to install it later.");
-      p.log.info("Install Docker: https://rancherdesktop.io/ or brew install docker");
+      missingDependencies.push("Docker CLI");
+      p.log.warn(chalk.yellow("Docker CLI is not installed"));
+      p.log.message(
+        chalk.cyan.bold(
+          "Install Rancher Desktop: https://docs.rancherdesktop.io/getting-started/installation/",
+        ),
+      );
+      p.log.message(chalk.cyan.bold("or run: brew install --cask rancher"));
     } else {
-      p.log.info("✅ Docker is installed");
-    }
+      p.log.success(`${chalk.green("Docker CLI is installed")}`);
 
-    const dockerComposeInstalled = await checkIfDockerComposeInstalled();
-    if (!dockerComposeInstalled) {
-      p.log.warn("⚠️ Docker Compose is not installed. You may need to install it later.");
-      p.log.info("Install Docker: https://rancherdesktop.io/ or brew install docker");
-    } else {
-      p.log.info("✅ Docker Compose is installed");
+      const dockerComposeInstalled = await checkIfDockerComposeInstalled();
+      if (!dockerComposeInstalled) {
+        missingDependencies.push("Docker Compose");
+        p.log.warn(chalk.yellow("Docker Compose is not installed"));
+        p.log.message(
+          chalk.cyan.bold(
+            "Install Rancher Desktop: https://docs.rancherdesktop.io/getting-started/installation/",
+          ),
+        );
+        p.log.message(chalk.cyan.bold("or run: brew install --cask rancher"));
+      } else {
+        p.log.success(`${chalk.green("Docker Compose is installed")}`);
+      }
     }
 
     const pythonInstalled = await checkIfPythonVersionsInstalled();
     if (!pythonInstalled) {
-      if (!noInstall) {
-        p.log.error(
-          "❌ You need Python 3.10, 3.11, or 3.12 installed to use this template. Please install one of these versions and try again.",
-        );
-        p.log.info("Install Python: https://www.python.org/downloads/");
-        process.exit(1);
-      } else {
-        p.log.warn("⚠️ Python 3.10+ is not installed. You may need to install it later.");
-      }
+      missingCriticalDependencies.push("Python 3.10+");
+      p.log.error(
+        chalk.red("❌ You need Python 3.10, 3.11, or 3.12 installed to use this template"),
+      );
+      p.log.message(chalk.cyan.bold("Install Python: https://www.python.org/downloads/"));
     } else {
-      p.log.info("✅ Python 3.10, 3.11, or 3.12 is installed");
+      p.log.success(`${chalk.green("Python 3.10, 3.11, or 3.12 is installed")}`);
     }
 
     const nodeInstalled = await checkIfNodeInstalled();
     if (!nodeInstalled) {
-      if (!noInstall) {
-        p.log.error("❌ Node.js 20.x or higher is required. Please install Node.js and try again.");
-        p.log.info("Install Node.js: https://nodejs.org/");
-        process.exit(1);
-      } else {
-        p.log.warn("⚠️ Node.js 20.x or higher is not installed. You may need to install it later.");
-      }
+      missingCriticalDependencies.push("Node.js 20+");
+      p.log.error(chalk.red("❌ You need Node.js 20.x or higher to use this template"));
+      p.log.message(chalk.cyan.bold("Install Node.js: https://nodejs.org/"));
     } else {
-      p.log.info("✅ Node.js 20.x or higher is installed");
+      p.log.success(`${chalk.green("Node.js 20.x or higher is installed")}`);
+    }
+
+    if (missingDependencies.length > 0 || missingCriticalDependencies.length > 0) {
+      const missingMsg = `Missing dependencies: ${[
+        ...missingCriticalDependencies,
+        ...missingDependencies,
+      ].join(", ")}`;
+
+      p.log.warn(chalk.yellow(missingMsg));
+      const continueAnyway = await p.confirm({
+        message: `Would you like to continue anyway?`,
+        initialValue: missingCriticalDependencies.length === 0,
+      });
+
+      if (p.isCancel(continueAnyway) || !continueAnyway) {
+        p.log.error(chalk.red("Aborting installation..."));
+        process.exit(1);
+      }
+
+      if (missingCriticalDependencies.length > 0) {
+        shouldSetNoInstall = true;
+      }
     }
   }
+
+  return {
+    noInstall: shouldSetNoInstall,
+    missingDependencies: [...missingCriticalDependencies, ...missingDependencies],
+  };
 };
 
 export const checkIfUvInstalled = async () => {

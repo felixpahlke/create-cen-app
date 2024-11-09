@@ -242,22 +242,38 @@ export const runCli = async () => {
         }
       }
       // install dependencies for full-stack template
-      if (!cliResults.flags.noInstall && cliResults.template.value === "full-stack-cen-template") {
-        const pkgManager = getUserPkgManager();
-        const command = pkgManager === "yarn" ? pkgManager : `${pkgManager} install`;
-        const setupEnv = await p.confirm({
-          message: `Would you like us to run ${chalk.magenta(`'${command}'`)} and ${chalk.magenta(
-            "'uv sync'",
-          )}?`,
-          initialValue: true,
-        });
+      if (cliResults.template.value === "full-stack-cen-template") {
+        if (!cliResults.flags.noInstall) {
+          const pkgManager = getUserPkgManager();
+          const command = pkgManager === "yarn" ? pkgManager : `${pkgManager} install`;
+          const setupEnv = await p.confirm({
+            message: `Would you like us to run ${chalk.magenta(`'${command}'`)} and ${chalk.magenta(
+              "'uv sync'",
+            )}?`,
+            initialValue: true,
+          });
 
-        if (isCancel(setupEnv)) {
-          p.cancel("Operation cancelled");
-          process.exit(0);
+          if (isCancel(setupEnv)) {
+            p.cancel("Operation cancelled");
+            process.exit(0);
+          }
+
+          cliResults.flags.noInstall = !setupEnv;
         }
 
-        cliResults.flags.noInstall = !setupEnv;
+        if (!cliResults.flags.noGit) {
+          const git = await p.confirm({
+            message: "Initialize a new git repository?",
+            initialValue: true,
+          });
+
+          if (isCancel(git)) {
+            p.cancel("Operation cancelled");
+            process.exit(0);
+          }
+
+          cliResults.flags.noGit = !git;
+        }
       }
     }
   } catch (err) {
