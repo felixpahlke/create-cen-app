@@ -24,7 +24,7 @@ export const fullStackInstaller = async ({
   // pull the repo from template repo into project folder
   const s = p.spinner();
   s.start(`Cloning full-stack-cen-template repository...`);
-  await execa("git", ["clone", FULL_STACK_CEN_TEMPLATE_REPO, projectName], {
+  await execa("git", ["clone", FULL_STACK_CEN_TEMPLATE_REPO, projectDir], {
     cwd: PKG_ROOT,
     stdio: "inherit",
   });
@@ -33,6 +33,7 @@ export const fullStackInstaller = async ({
 
   // delete .git folder
   p.log.info(`Cleaning up...`);
+
   fs.removeSync(path.join(projectDir, ".git"));
   p.log.success(`Successfully cleaned up\n`);
 
