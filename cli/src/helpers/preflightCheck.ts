@@ -95,25 +95,23 @@ export const preflightCheck = async ({
     if (!dockerInstalled) {
       missingDependencies.push("Docker CLI");
       p.log.warn(chalk.yellow("Docker CLI is not installed"));
+      p.log.message(chalk.cyan.bold("Install Docker with Homebrew: brew install docker\n"));
       p.log.message(
-        chalk.cyan.bold(
-          "Install Rancher Desktop: https://docs.rancherdesktop.io/getting-started/installation/",
-        ),
+        chalk.cyan.bold("Install Docker Runtime (colima): https://github.com/abiosoft/colima/ "),
       );
-      p.log.message(chalk.cyan.bold("or run: brew install --cask rancher"));
     } else {
       p.log.success(`${chalk.green("Docker CLI is installed")}`);
 
       const dockerComposeInstalled = await checkIfDockerComposeInstalled();
       if (!dockerComposeInstalled) {
         missingDependencies.push("Docker Compose");
-        p.log.warn(chalk.yellow("Docker Compose is not installed"));
+        p.log.warn(chalk.yellow("Docker Compose is not available"));
         p.log.message(
-          chalk.cyan.bold(
-            "Install Rancher Desktop: https://docs.rancherdesktop.io/getting-started/installation/",
-          ),
+          chalk.cyan.bold("Install Docker Compose with Homebrew: brew install docker-compose\n"),
         );
-        p.log.message(chalk.cyan.bold("or run: brew install --cask rancher"));
+        p.log.message(
+          chalk.cyan.bold("Install Docker Runtime (colima): https://github.com/abiosoft/colima/ "),
+        );
       } else {
         p.log.success(`${chalk.green("Docker Compose is installed")}`);
       }
@@ -190,7 +188,7 @@ const checkIfDockerComposeInstalled = async () => {
   let isInstalled = false;
 
   try {
-    const { stdout } = await execa("docker", ["compose", "--version"]);
+    const { stdout } = await execa("docker", ["compose", "version"]);
     isInstalled = stdout !== "";
   } catch {
     isInstalled = false;
@@ -198,7 +196,7 @@ const checkIfDockerComposeInstalled = async () => {
 
   if (!isInstalled) {
     try {
-      const { stdout } = await execa("docker-compose", ["--version"]);
+      const { stdout } = await execa("docker-compose", ["version"]);
       isInstalled = stdout !== "";
     } catch {
       isInstalled = false;
