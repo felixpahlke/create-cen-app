@@ -1,3 +1,4 @@
+import { AvailableFlavours } from "./index.js";
 import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { execa } from "execa";
@@ -8,6 +9,7 @@ import { installDependencies } from "~/helpers/installDependencies.js";
 
 interface FullStackInstallerOptions {
   projectName: string;
+  flavour: AvailableFlavours;
   backendDir: string;
   frontendDir: string;
   projectDir: string;
@@ -16,6 +18,7 @@ interface FullStackInstallerOptions {
 
 export const fullStackInstaller = async ({
   projectName,
+  flavour,
   backendDir,
   frontendDir,
   projectDir,
@@ -24,7 +27,7 @@ export const fullStackInstaller = async ({
   // pull the repo from template repo into project folder
   const s = p.spinner();
   s.start(`Cloning full-stack-cen-template repository...`);
-  await execa("git", ["clone", FULL_STACK_CEN_TEMPLATE_REPO, projectDir], {
+  await execa("git", ["clone", "-b", flavour, FULL_STACK_CEN_TEMPLATE_REPO, projectDir], {
     cwd: PKG_ROOT,
     stdio: "inherit",
   });
@@ -45,52 +48,54 @@ export const fullStackInstaller = async ({
     p.log.info("Skipping dependencies installation");
     return;
   }
+  if (flavour === "backend-only" || flavour === "main" || flavour === "oauth-proxy") {
+    p.log.info("Preparing Python environment...");
 
-  p.log.info("Preparing Python environment...");
+    // Check for available Python versions in descending order
+    const pythonVersions = ["3.12", "3.11", "3.10"];
+    let selectedVersion = null;
 
-  // Check for available Python versions in descending order
-  const pythonVersions = ["3.12", "3.11", "3.10"];
-  let selectedVersion = null;
+    for (const version of pythonVersions) {
+      const versionInstalled = await execa(`python${version}`, ["--version"])
+        .then(() => true)
+        .catch(() => false);
 
-  for (const version of pythonVersions) {
-    const versionInstalled = await execa(`python${version}`, ["--version"])
-      .then(() => true)
-      .catch(() => false);
+      if (versionInstalled) {
+        selectedVersion = version;
+        break;
+      }
+    }
 
-    if (versionInstalled) {
-      selectedVersion = version;
-      break;
+    if (!selectedVersion) {
+      p.log.error(
+        "Python 3.10 or higher is not installed. Please install Python 3.10+ and follow the Backend README.",
+      );
+      return;
+    }
+
+    s.start(`Creating virtual environment with Python ${selectedVersion}...`);
+
+    try {
+      await execa("uv", ["venv", "--python", `python${selectedVersion}`], {
+        cwd: backendDir,
+        stdio: "inherit",
+      });
+
+      await execa("uv", ["sync"], {
+        cwd: backendDir,
+        stdio: "inherit",
+      });
+
+      s.stop();
+      p.log.success(`Successfully installed ${chalk.green.bold("python")} requirements\n`);
+    } catch (error) {
+      s.stop();
+      p.log.error(
+        "Failed to setup Python environment. Please check the Backend README for manual setup.",
+      );
     }
   }
-
-  if (!selectedVersion) {
-    p.log.error(
-      "Python 3.10 or higher is not installed. Please install Python 3.10+ and follow the Backend README.",
-    );
-    return;
+  if (flavour !== "backend-only") {
+    await installDependencies({ frontendDir });
   }
-
-  s.start(`Creating virtual environment with Python ${selectedVersion}...`);
-
-  try {
-    await execa("uv", ["venv", "--python", `python${selectedVersion}`], {
-      cwd: backendDir,
-      stdio: "inherit",
-    });
-
-    await execa("uv", ["sync"], {
-      cwd: backendDir,
-      stdio: "inherit",
-    });
-
-    s.stop();
-    p.log.success(`Successfully installed ${chalk.green.bold("python")} requirements\n`);
-  } catch (error) {
-    s.stop();
-    p.log.error(
-      "Failed to setup Python environment. Please check the Backend README for manual setup.",
-    );
-  }
-
-  await installDependencies({ frontendDir });
 };

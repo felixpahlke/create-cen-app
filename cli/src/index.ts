@@ -31,6 +31,7 @@ const main = async () => {
     displayName,
     backend,
     pythonVersion,
+    flavour,
     template,
     // envVars,
     flags: { noGit, noInstall, noVenv, proxy },
@@ -50,17 +51,20 @@ const main = async () => {
     noVenv,
     proxy,
     template: template.value,
+    flavour,
     // envVars,
     displayName,
   });
 
-  // Write name to package.json
-  const pkgJson = fs.readJSONSync(path.join(frontendDir, "package.json")) as CT3APackageJSON;
-  pkgJson.name = scopedAppName;
-  pkgJson.ct3aMetadata = { initVersion: getVersion() };
-  fs.writeJSONSync(path.join(frontendDir, "package.json"), pkgJson, {
-    spaces: 2,
-  });
+  if (flavour !== "backend-only") {
+    // Write name to package.json
+    const pkgJson = fs.readJSONSync(path.join(frontendDir, "package.json")) as CT3APackageJSON;
+    pkgJson.name = scopedAppName;
+    pkgJson.ct3aMetadata = { initVersion: getVersion() };
+    fs.writeJSONSync(path.join(frontendDir, "package.json"), pkgJson, {
+      spaces: 2,
+    });
+  }
 
   if (!noInstall && template.value === "create-cen-app") {
     await installDependencies({ frontendDir });

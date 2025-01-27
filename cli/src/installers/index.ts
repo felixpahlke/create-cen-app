@@ -103,6 +103,8 @@ export const backendsDisplayList: BackendDisplay[] = [
   },
 ];
 
+export type AvailableTemplates = "full-stack-cen-template" | "create-cen-app";
+
 export type TemplateDisplay = {
   value: AvailableTemplates;
   name: string;
@@ -123,4 +125,38 @@ export const templateDisplayList: TemplateDisplay[] = [
   },
 ];
 
-export type AvailableTemplates = "full-stack-cen-template" | "create-cen-app";
+export type AvailableFlavours = "main" | "oauth-proxy" | "backend-only"; // | "go" | "java"
+
+export type FlavourDisplay = {
+  value: AvailableFlavours;
+  name: string;
+  description: string;
+};
+
+export const flavourDisplayList: FlavourDisplay[] = [
+  {
+    value: "main",
+    name: "main",
+    description: "Default full-stack-cen-template",
+  },
+  {
+    value: "oauth-proxy",
+    name: "oauth-proxy",
+    description: "Authentication with OAuth proxy & AppID",
+  },
+  // {
+  //   value: "go",
+  //   name: "Go",
+  //   description: "full-stack-cen-template with Go backend",
+  // },
+  // {
+  //   value: "java",
+  //   name: "Java",
+  //   description: "full-stack-cen-template with Java backend",
+  // },
+  {
+    value: "backend-only",
+    name: "backend-only",
+    description: "Backend-only template with API-Key authentication",
+  },
+];

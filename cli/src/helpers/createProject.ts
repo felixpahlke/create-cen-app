@@ -6,7 +6,12 @@ import { installPackages } from "~/helpers/installPackages.js";
 import { scaffoldProject } from "~/helpers/scaffoldProject.js";
 import { fastApiInstaller } from "~/installers/fastApi.js";
 import { fullStackInstaller } from "~/installers/full-stack-installer.js";
-import { AvailableBackends, AvailableTemplates, type PkgInstallerMap } from "~/installers/index.js";
+import {
+  AvailableBackends,
+  AvailableFlavours,
+  AvailableTemplates,
+  type PkgInstallerMap,
+} from "~/installers/index.js";
 // import { watsonxInstaller } from "~/installers/watsonx.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { PythonVersion } from "~/utils/getUserPythonVersion.js";
@@ -23,6 +28,7 @@ interface CreateProjectOptions {
   // envVars?: Record<AvailableEnvVars, string>;
   proxy: boolean;
   template: AvailableTemplates;
+  flavour: AvailableFlavours;
   // importAlias: string;
 }
 
@@ -44,6 +50,7 @@ export const createProject = async ({
   // envVars,
   proxy,
   template,
+  flavour,
 }: CreateProjectOptions): Promise<CreateProjectResult> => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
@@ -66,6 +73,7 @@ export const createProject = async ({
     projectName,
     template,
     noInstall,
+    flavour,
   });
 
   noInstall = shouldSetNoInstall;
@@ -105,7 +113,14 @@ export const createProject = async ({
   }
 
   if (template === "full-stack-cen-template") {
-    await fullStackInstaller({ backendDir, frontendDir, projectDir, projectName, noInstall });
+    await fullStackInstaller({
+      backendDir,
+      frontendDir,
+      projectDir,
+      projectName,
+      noInstall,
+      flavour,
+    });
   }
 
   return { frontendDir, backendDir, projectDir, missingDependencies };

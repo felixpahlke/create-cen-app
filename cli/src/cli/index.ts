@@ -3,12 +3,13 @@ import { isCancel } from "@clack/prompts";
 import chalk from "chalk";
 import { Command } from "commander";
 import { CREATE_CEN_APP, DEFAULT_APP_NAME, DEFAULT_DISPLAY_NAME } from "~/consts.js";
-import { preflightCheck } from "~/helpers/preflightCheck.js";
 import {
   type AvailableBackends,
+  AvailableFlavours,
   availablePackages,
   type AvailablePackages,
   backendsDisplayList,
+  flavourDisplayList,
   TemplateDisplay,
   templateDisplayList,
 } from "~/installers/index.js";
@@ -27,6 +28,7 @@ interface CliFlags {
 
 interface CliResults {
   appName: string;
+  flavour: AvailableFlavours;
   displayName: string;
   packages: AvailablePackages[];
   backend: AvailableBackends;
@@ -38,6 +40,7 @@ interface CliResults {
 const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
   displayName: DEFAULT_DISPLAY_NAME,
+  flavour: "default",
   packages: ["tailwind", "envVariables", "carbon", "recoil"],
   backend: "default",
   pythonVersion: { path: "/usr/bin/python3", owner: "system" },
@@ -243,13 +246,35 @@ export const runCli = async () => {
       }
       // install dependencies for full-stack template
       if (cliResults.template.value === "full-stack-cen-template") {
+        const flavour = await p.select({
+          message: "Which flavour would you like to use?",
+          options: flavourDisplayList.map((flavour) => ({
+            label: flavour.name,
+            value: flavour.value,
+            hint: flavour.description,
+          })),
+          initialValue: "default",
+        });
+
+        if (isCancel(flavour)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
+
+        cliResults.flavour = flavour as AvailableFlavours;
+
         if (!cliResults.flags.noInstall) {
           const pkgManager = getUserPkgManager();
           const command = pkgManager === "yarn" ? pkgManager : `${pkgManager} install`;
           const setupEnv = await p.confirm({
-            message: `Would you like us to run ${chalk.magenta(`'${command}'`)} and ${chalk.magenta(
-              "'uv sync'",
-            )}?`,
+            message:
+              flavour === "backend-only"
+                ? `Would you like us to run ${chalk.magenta("'uv sync'")}?`
+                : flavour === "go" || flavour === "java"
+                ? `Would you like us to run ${chalk.magenta(`'${command}'`)}?`
+                : `Would you like us to run ${chalk.magenta(`'${command}'`)} and ${chalk.magenta(
+                    "'uv sync'",
+                  )}?`,
             initialValue: true,
           });
 

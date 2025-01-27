@@ -2,7 +2,7 @@ import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { execa } from "execa";
 import fs from "fs-extra";
-import { AvailableTemplates, type PkgInstallerMap } from "~/installers/index.js";
+import { AvailableFlavours, AvailableTemplates, type PkgInstallerMap } from "~/installers/index.js";
 import { getUserPythonVersions } from "~/utils/getUserPythonVersion.js";
 
 interface PreflightCheckOptions {
@@ -10,6 +10,7 @@ interface PreflightCheckOptions {
   projectDir: string;
   template: AvailableTemplates;
   noInstall: boolean;
+  flavour: AvailableFlavours;
 }
 
 interface PreflightCheckResult {
@@ -22,6 +23,7 @@ export const preflightCheck = async ({
   projectName,
   template,
   noInstall,
+  flavour,
 }: PreflightCheckOptions): Promise<PreflightCheckResult> => {
   if (fs.existsSync(projectDir)) {
     if (fs.readdirSync(projectDir).length === 0) {
@@ -80,17 +82,19 @@ export const preflightCheck = async ({
   if (template === "full-stack-cen-template") {
     p.log.info("Checking for dependencies...\n");
 
-    const uvInstalled = await checkIfUvInstalled();
-    if (!uvInstalled) {
-      missingCriticalDependencies.push("uv");
-      p.log.error(chalk.red("❌ uv is not installed"));
-      p.log.message(
-        chalk.cyan.bold("Install uv: https://docs.astral.sh/uv/getting-started/installation/"),
-      );
-    } else {
-      p.log.success(`${chalk.green("uv is installed")}`);
+    //@ts-expect-error - java flavour will be added in a future PR, ignoring type error for now
+    if (flavour !== "go" && flavour !== "java") {
+      const uvInstalled = await checkIfUvInstalled();
+      if (!uvInstalled) {
+        missingCriticalDependencies.push("uv");
+        p.log.error(chalk.red("❌ uv is not installed"));
+        p.log.message(
+          chalk.cyan.bold("Install uv: https://docs.astral.sh/uv/getting-started/installation/"),
+        );
+      } else {
+        p.log.success(`${chalk.green("uv is installed")}`);
+      }
     }
-
     const dockerInstalled = await checkIfDockerInstalled();
     if (!dockerInstalled) {
       missingDependencies.push("Docker CLI");
@@ -117,24 +121,29 @@ export const preflightCheck = async ({
       }
     }
 
-    const pythonInstalled = await checkIfPythonVersionsInstalled();
-    if (!pythonInstalled) {
-      missingCriticalDependencies.push("Python 3.10+");
-      p.log.error(
-        chalk.red("❌ You need Python 3.10, 3.11, or 3.12 installed to use this template"),
-      );
-      p.log.message(chalk.cyan.bold("Install Python: https://www.python.org/downloads/"));
-    } else {
-      p.log.success(`${chalk.green("Python 3.10, 3.11, or 3.12 is installed")}`);
+    //@ts-expect-error - java flavour will be added in a future PR, ignoring type error for now
+    if (flavour !== "go" && flavour !== "java") {
+      const pythonInstalled = await checkIfPythonVersionsInstalled();
+      if (!pythonInstalled) {
+        missingCriticalDependencies.push("Python 3.10+");
+        p.log.error(
+          chalk.red("❌ You need Python 3.10, 3.11, or 3.12 installed to use this template"),
+        );
+        p.log.message(chalk.cyan.bold("Install Python: https://www.python.org/downloads/"));
+      } else {
+        p.log.success(`${chalk.green("Python 3.10, 3.11, or 3.12 is installed")}`);
+      }
     }
 
-    const nodeInstalled = await checkIfNodeInstalled();
-    if (!nodeInstalled) {
-      missingCriticalDependencies.push("Node.js 20+");
-      p.log.error(chalk.red("❌ You need Node.js 20.x or higher to use this template"));
-      p.log.message(chalk.cyan.bold("Install Node.js: https://nodejs.org/"));
-    } else {
-      p.log.success(`${chalk.green("Node.js 20.x or higher is installed")}`);
+    if (flavour !== "backend-only") {
+      const nodeInstalled = await checkIfNodeInstalled();
+      if (!nodeInstalled) {
+        missingCriticalDependencies.push("Node.js 20+");
+        p.log.error(chalk.red("❌ You need Node.js 20.x or higher to use this template"));
+        p.log.message(chalk.cyan.bold("Install Node.js: https://nodejs.org/"));
+      } else {
+        p.log.success(`${chalk.green("Node.js 20.x or higher is installed")}`);
+      }
     }
 
     if (missingDependencies.length > 0 || missingCriticalDependencies.length > 0) {
