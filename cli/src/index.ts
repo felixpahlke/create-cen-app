@@ -84,6 +84,7 @@ const main = async () => {
     backend,
     noVenv,
     missingDependencies,
+    flavour,
   });
 
   process.exit(0);

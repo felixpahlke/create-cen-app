@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { DEFAULT_APP_NAME } from "~/consts.js";
 import {
   AvailableBackends,
+  AvailableFlavours,
   AvailableTemplates,
   type InstallerOptions,
 } from "~/installers/index.js";
@@ -16,6 +17,7 @@ interface LogNextStepsProps {
   backend: AvailableBackends;
   noInstall?: boolean;
   noVenv: boolean;
+  flavour: AvailableFlavours;
   template: AvailableTemplates;
   missingDependencies: string[];
 }
@@ -29,6 +31,7 @@ export const logNextSteps = ({
   noInstall,
   noVenv,
   template,
+  flavour,
   missingDependencies,
 }: LogNextStepsProps) => {
   p.log.info(`${chalk.bold.green("All done!")} 🎉\n`);
@@ -44,7 +47,7 @@ export const logNextSteps = ({
   }
 
   if (template === "full-stack-cen-template") {
-    createFullStackCenTemplateNextSteps({ projectName, missingDependencies });
+    createFullStackCenTemplateNextSteps({ projectName, flavour, missingDependencies });
   }
   p.log.message("");
   p.outro(`${chalk.bold.green("Have fun building!")} 🚀`);
@@ -92,9 +95,11 @@ const createCenAppNextSteps = ({
 
 const createFullStackCenTemplateNextSteps = ({
   projectName,
+  flavour,
   missingDependencies,
 }: {
   projectName: string;
+  flavour: AvailableFlavours;
   missingDependencies: string[];
 }) => {
   p.log.info(
@@ -102,6 +107,12 @@ const createFullStackCenTemplateNextSteps = ({
       missingDependencies.length > 0
         ? `  ${chalk.yellow("Install missing dependencies:")} ${missingDependencies.join(", ")}\n\n`
         : ""
-    }  ${chalk.cyan("cd")} ${projectName}\n  ${chalk.cyan("docker compose watch")}`,
+    }${
+      flavour === "oauth-proxy"
+        ? `${chalk.cyan(
+            "  Get an AppID Instance (see development.md) and put the credentials in .env\n\n",
+          )}`
+        : ""
+    }${chalk.cyan("  cd")} ${projectName}\n  ${chalk.cyan("docker compose watch")}`,
   );
 };

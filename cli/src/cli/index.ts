@@ -40,7 +40,7 @@ interface CliResults {
 const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
   displayName: DEFAULT_DISPLAY_NAME,
-  flavour: "default",
+  flavour: "main",
   packages: ["tailwind", "envVariables", "carbon", "recoil"],
   backend: "default",
   pythonVersion: { path: "/usr/bin/python3", owner: "system" },
