@@ -22,4 +22,4 @@ export const CREATE_CEN_APP = "create-cen-app";
 // export const WATSONX_BRANCH = "create-cen-app";
 
 export const FULL_STACK_CEN_TEMPLATE_REPO =
-  "https://github.com/kulimantang/full-stack-cen-template.git";
+  "git@github.ibm.com:technology-garage-dach/full-stack-cen-template.git";

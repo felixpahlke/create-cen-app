@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { initializeGit } from "./helpers/git.js";
 import { installDependencies } from "./helpers/installDependencies.js";
 import { getVersion } from "./utils/getCENVersion.js";
 import { getNpmVersion, renderVersionWarning } from "./utils/renderVersionWarning.js";
@@ -8,7 +9,6 @@ import path from "path";
 import { type PackageJson } from "type-fest";
 import { runCli } from "~/cli/index.js";
 import { createProject } from "~/helpers/createProject.js";
-import { initializeGit } from "~/helpers/git.js";
 import { logNextSteps } from "~/helpers/logNextSteps.js";
 import { buildPkgInstallerMap } from "~/installers/index.js";
 import { parseNameAndPath } from "~/utils/parseNameAndPath.js";

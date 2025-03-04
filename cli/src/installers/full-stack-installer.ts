@@ -27,18 +27,56 @@ export const fullStackInstaller = async ({
   // pull the repo from template repo into project folder
   const s = p.spinner();
   s.start(`Cloning full-stack-cen-template repository...`);
-  await execa("git", ["clone", "-b", flavour, FULL_STACK_CEN_TEMPLATE_REPO, projectDir], {
-    cwd: PKG_ROOT,
-    stdio: "inherit",
-  });
+  await execa(
+    "git",
+    ["clone", "--depth=1", "-b", flavour, FULL_STACK_CEN_TEMPLATE_REPO, projectDir],
+    {
+      cwd: PKG_ROOT,
+      stdio: "inherit",
+    },
+  );
+
+  // Rename the default branch to main
   s.stop();
   p.log.success(`Successfully cloned ${chalk.green.bold("full-stack-cen-template")} repository\n`);
 
-  // delete .git folder
-  p.log.info(`Cleaning up...`);
+  p.log.info(`Setting up git...`);
+  try {
+    await execa("git", ["branch", "-m", "main"], {
+      cwd: projectDir,
+    });
+    p.log.success(`Successfully renamed branch to ${chalk.green.bold("main")}`);
+  } catch (error) {
+    p.log.error(`Failed to rename branch to main: ${error}`);
+  }
 
-  fs.removeSync(path.join(projectDir, ".git"));
-  p.log.success(`Successfully cleaned up\n`);
+  // remove origin
+  try {
+    await execa("git", ["remote", "remove", "origin"], {
+      cwd: projectDir,
+    });
+    p.log.success(`Successfully removed git remote ${chalk.green.bold("origin")}`);
+  } catch (error) {
+    p.log.error(`Failed to remove git remote origin: ${error}`);
+  }
+
+  // Add the template repo as upstream
+  try {
+    await execa("git", ["remote", "add", "upstream", FULL_STACK_CEN_TEMPLATE_REPO], {
+      cwd: projectDir,
+    });
+    p.log.success(`Successfully added ${chalk.green.bold("upstream")} remote`);
+  } catch (error) {
+    p.log.error(`Failed to add upstream remote: ${error}`);
+  }
+
+  p.log.success(`Successfully setup git\n`);
+
+  // delete .git folder
+  // p.log.info(`Cleaning up...`);
+
+  // fs.removeSync(path.join(projectDir, ".git"));
+  // p.log.success(`Successfully cleaned up\n`);
 
   // create .env file
   const envDest = path.join(projectDir, ".env");

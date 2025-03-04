@@ -286,19 +286,22 @@ export const runCli = async () => {
           cliResults.flags.noInstall = !setupEnv;
         }
 
-        if (!cliResults.flags.noGit) {
-          const git = await p.confirm({
-            message: "Initialize a new git repository?",
-            initialValue: true,
-          });
+        // if (!cliResults.flags.noGit) {
+        //   const git = await p.confirm({
+        //     message: "Initialize a new git repository?",
+        //     initialValue: true,
+        //   });
 
-          if (isCancel(git)) {
-            p.cancel("Operation cancelled");
-            process.exit(0);
-          }
+        //   if (isCancel(git)) {
+        //     p.cancel("Operation cancelled");
+        //     process.exit(0);
+        //   }
 
-          cliResults.flags.noGit = !git;
-        }
+        //   cliResults.flags.noGit = !git;
+        // }
+
+        // we are handling this in full-stack-installer.ts
+        cliResults.flags.noGit = true;
       }
     }
   } catch (err) {

@@ -119,7 +119,7 @@ export const templateDisplayList: TemplateDisplay[] = [
   },
   {
     value: "create-cen-app",
-    name: "original create-cen-app",
+    name: "original create-cen-app (deprecated)",
     description:
       "Lightweight Next.js template with a choice of FastAPI, tRPC or default Next.js API Routes",
   },

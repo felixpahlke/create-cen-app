@@ -102,17 +102,34 @@ const createFullStackCenTemplateNextSteps = ({
   flavour: AvailableFlavours;
   missingDependencies: string[];
 }) => {
+  // Log git config note before next steps
   p.log.info(
-    `${chalk.bold.cyan("Next steps:")}\n\n${
-      missingDependencies.length > 0
-        ? `  ${chalk.yellow("Install missing dependencies:")} ${missingDependencies.join(", ")}\n\n`
-        : ""
-    }${
-      flavour === "oauth-proxy"
-        ? `${chalk.cyan(
-            "  Get an AppID Instance (see development.md) and put the credentials in .env\n\n",
-          )}`
-        : ""
-    }${chalk.cyan("  cd")} ${projectName}\n  ${chalk.cyan("docker compose watch")}`,
+    `${chalk.yellow(
+      "Note: the base template has been registered as upstream, so that you can pull updates later on. Add your own remote as origin and pull updates from upstream:",
+    )}\n  ${chalk.yellowBright("git remote add origin <your-remote-url>")}\n  ${chalk.yellowBright(
+      "git pull --no-commit upstream " + flavour,
+    )}`,
   );
+
+  let steps = `${chalk.bold.cyan("Next steps:")}\n\n`;
+
+  // Add missing dependencies message if needed
+  if (missingDependencies.length > 0) {
+    steps += `  ${chalk.yellow("Install missing dependencies:")} ${missingDependencies.join(
+      ", ",
+    )}\n\n`;
+  }
+
+  // Add AppID instructions for oauth-proxy flavor
+  if (flavour === "oauth-proxy") {
+    steps += `  ${chalk.cyan(
+      "Get an AppID Instance (see development.md) and put the credentials in .env",
+    )}\n\n`;
+  }
+
+  // Add standard navigation and startup commands
+  steps += `  ${chalk.cyan("cd")} ${projectName}\n`;
+  steps += `  ${chalk.cyan("docker compose watch")}\n`;
+
+  p.log.info(steps);
 };
