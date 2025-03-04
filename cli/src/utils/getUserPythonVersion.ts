@@ -56,7 +56,7 @@ export const getUserPythonVersions = async (): Promise<PythonVersion[] | null> =
 async function getPythonAliases(): Promise<string[]> {
   try {
     const { stdout } = await execa("compgen", ["-c", "|", "grep", "-E", "'^python[0-9.]*$'"], {
-      shell: true,
+      shell: "bash",
     });
     const text = stdout.trim();
     const aliases = text.split("\n");
@@ -68,7 +68,9 @@ async function getPythonAliases(): Promise<string[]> {
 
 async function getPythonPaths(alias: string): Promise<string[]> {
   try {
-    const { stdout } = await execa("type", ["-a", alias]);
+    const { stdout } = await execa("type", ["-a", alias], {
+      shell: "bash",
+    });
     const text = stdout.trim();
     const regex = new RegExp(`(?<=${alias} is ).+`, "gm");
     const paths = text.match(regex) || [];
