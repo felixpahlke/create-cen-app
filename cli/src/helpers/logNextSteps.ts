@@ -103,13 +103,16 @@ const createFullStackCenTemplateNextSteps = ({
   missingDependencies: string[];
 }) => {
   // Log git config note before next steps
-  p.log.info(
-    `${chalk.yellow(
-      "Note: the base template has been registered as upstream, so that you can pull updates later on. Add your own remote as origin and pull updates from upstream:",
-    )}\n  ${chalk.yellowBright("git remote add origin <your-remote-url>")}\n  ${chalk.yellowBright(
-      "git pull --no-commit upstream " + flavour,
-    )}`,
-  );
+
+  let gitNote = `${chalk.bold.cyan("Note:")}\n\n`;
+
+  gitNote += `${chalk.cyan(
+    "The base template has been registered as upstream, so that you can pull updates later on. Add your own remote as origin and pull updates from upstream:",
+  )}\n  
+  ${chalk.cyan("git remote add origin <your-remote-url>")}\n  
+  ${chalk.cyan("git pull --no-commit upstream " + flavour)}`;
+
+  p.log.info(gitNote);
 
   let steps = `${chalk.bold.cyan("Next steps:")}\n\n`;
 
