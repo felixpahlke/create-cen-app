@@ -27,14 +27,10 @@ export const fullStackInstaller = async ({
   // pull the repo from template repo into project folder
   const s = p.spinner();
   s.start(`Cloning full-stack-cen-template repository...`);
-  await execa(
-    "git",
-    ["clone", "--depth=1", "-b", flavour, FULL_STACK_CEN_TEMPLATE_REPO, projectDir],
-    {
-      cwd: PKG_ROOT,
-      stdio: "inherit",
-    },
-  );
+  await execa("git", ["clone", "-b", flavour, FULL_STACK_CEN_TEMPLATE_REPO, projectDir], {
+    cwd: PKG_ROOT,
+    stdio: "inherit",
+  });
 
   // Rename the default branch to main
   s.stop();
