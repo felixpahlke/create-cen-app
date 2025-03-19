@@ -107,7 +107,7 @@ const createFullStackCenTemplateNextSteps = ({
   let gitNote = `${chalk.bold.cyan("Note:")}\n\n`;
 
   gitNote += `${chalk.cyan(
-    "The base template has been registered as upstream, so that you can pull updates later on. Add your own remote as origin and pull updates from upstream:",
+    "The base template has been registered as upstream, so that you can pull updates later on.\nAdd your own remote as origin and pull updates from upstream:",
   )}\n  
   ${chalk.cyan("git remote add origin <your-remote-url>")}\n  
   ${chalk.cyan("git pull --no-commit upstream " + flavour)}`;
@@ -124,7 +124,7 @@ const createFullStackCenTemplateNextSteps = ({
   }
 
   // Add AppID instructions for oauth-proxy flavor
-  if (flavour === "oauth-proxy") {
+  if (flavour === "oauth-proxy" || flavour === "oauth-proxy-custom-ui") {
     steps += `  ${chalk.cyan(
       "Get an AppID Instance (see development.md) and put the credentials in .env",
     )}\n\n`;

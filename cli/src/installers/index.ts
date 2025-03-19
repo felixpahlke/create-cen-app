@@ -125,7 +125,12 @@ export const templateDisplayList: TemplateDisplay[] = [
   },
 ];
 
-export type AvailableFlavours = "main" | "oauth-proxy" | "backend-only"; // | "go" | "java"
+export type AvailableFlavours =
+  | "main"
+  | "oauth-proxy"
+  | "backend-only"
+  | "main-custom-ui"
+  | "oauth-proxy-custom-ui"; // | "go" | "java"
 
 export type FlavourDisplay = {
   value: AvailableFlavours;
@@ -137,12 +142,12 @@ export const flavourDisplayList: FlavourDisplay[] = [
   {
     value: "main",
     name: "main",
-    description: "Default full-stack-cen-template",
+    description: "Carbon UI + built-in auth",
   },
   {
     value: "oauth-proxy",
     name: "oauth-proxy",
-    description: "Authentication with OAuth proxy & AppID",
+    description: "Carbon UI + auth via oauth proxy & AppID",
   },
   // {
   //   value: "go",
@@ -157,6 +162,16 @@ export const flavourDisplayList: FlavourDisplay[] = [
   {
     value: "backend-only",
     name: "backend-only",
-    description: "Backend-only template with API-Key authentication",
+    description: "API-only with API key auth",
+  },
+  {
+    value: "main-custom-ui",
+    name: "main-custom-ui",
+    description: "shadcn UI + built-in auth",
+  },
+  {
+    value: "oauth-proxy-custom-ui",
+    name: "oauth-proxy-custom-ui",
+    description: "shadcn UI + auth via oauth proxy & AppID",
   },
 ];
