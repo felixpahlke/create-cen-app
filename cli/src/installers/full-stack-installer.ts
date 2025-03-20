@@ -82,7 +82,13 @@ export const fullStackInstaller = async ({
     p.log.info("Skipping dependencies installation");
     return;
   }
-  if (flavour === "backend-only" || flavour === "main" || flavour === "oauth-proxy") {
+  if (
+    flavour === "backend-only" ||
+    flavour === "main" ||
+    flavour === "oauth-proxy" ||
+    flavour === "main-custom-ui" ||
+    flavour === "oauth-proxy-custom-ui"
+  ) {
     p.log.info("Preparing Python environment...");
 
     // Check for available Python versions in descending order
