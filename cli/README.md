@@ -7,57 +7,61 @@
 </h1>
 
 <p align="center">
-  an interactive CLI to create a Client-Engineering-Style application with Next.js & optionally: Carbon Design System, Tailwind CSS, and tRPC or FastAPI.
-</p>
-
-<p align="center">
-  
+  An interactive CLI to create a Client-Engineering-Style application with FastAPI, React, and modern full-stack features.
 </p>
 
 <br/>
 
 <p align="center">Get Started by running <code>npm create cen-app@latest</code></p>
 
-<div align="center">
-
-</div>
-<br/>
-
-<p align="center">This project is inspired by and forked from <a rel="noopener noreferrer" target="_blank" href="https://init.tips">T3 Stack</a>. If you want to learn more about the T3 Stack, <a href="http://www.youtube.com/watch?v=PbjHxIuHduU" target="_blank">
-  watch Theo's overview on Youtube here
-</a></p>
-
 <h2 id="about">The Client Engineering Stack</h2>
 
-The stack is focused on **simplicity**, **modularity**, and **speed**. It consists of:
+The stack is focused on **simplicity**, **modularity**, and **enterprise-ready features**. The CLI helps you set up a modern full-stack application with:
 
-- [Next.js](https://nextjs.org)
+### Backend
+
+- [FastAPI](https://fastapi.tiangolo.com) - Modern Python web framework
+- [SQLModel](https://sqlmodel.tiangolo.com) - SQL ORM for Python
+- [PostgreSQL](https://www.postgresql.org) - Robust SQL database
+- [Pydantic](https://docs.pydantic.dev) - Data validation and settings management
+
+### Frontend
+
+- [React](https://react.dev) with TypeScript
+- [Carbon Design System](https://carbondesignsystem.com/) & [Carboncn UI](https://www.carboncn.dev/) (optional)
 - [Tailwind CSS](https://tailwindcss.com)
-- [carbon design system](https://www.carbondesignsystem.com)
-- [TypeScript](https://typescriptlang.org)
-- [tRPC](https://trpc.io) or [FastAPI](https://fastapi.tiangolo.com)
+- Dark mode support
+- Auto-generated API client
 
-<!-- - [Prisma](https://prisma.io) -->
-<!-- - [NextAuth.js](https://next-auth.js.org) -->
+### DevOps & Security
 
-### Why this stack?
+- [Docker Compose](https://www.docker.com) & [colima](https://github.com/abiosoft/colima/) for development
+- JWT authentication
+- Secure password hashing
+- OpenShift deployment support
 
-- **Next.js** is a great produciton ready React framework. It's got a great community, great docs, and is very easy to use.
-- **Tailwind CSS** is a utility-first CSS framework that is easy to learn and use. It's also very customizable and has a great community.
-- **FastAPI** is a great Backend-choice when working with Data Scientists, as their code be easily pasted into the backend. It's easy to use, has great docs, and the automatic implementation of the **Swagger UI** makes it great to work with.
-- **tRPC** when Data Science is not a major requirement, tRPC is a great choice for a Backend-solution (technically Next.js is the backend). It provides type-safety from back- to frontend and has an overall great developer experience.
+### CLI Features
+
+- Fast dependency installation (with uv and npm)
+- Automated git setup (sets base template as upstream for future updates)
+- Multiple template flavors to choose from:
+  - `main` - Default with built-in user management
+  - `oauth-proxy` - External Identity Provider integration
+  - `backend-only` - FastAPI backend only
+  - `main-custom-ui` - Custom UI with shadcn/ui
+  - `oauth-proxy-custom-ui` - OAuth with custom UI
 
 ### What is `create-cen-app`?
 
-`create-cen-app` is a CLI built by CEN Stack devs to streamline the setup of a modular CEN Stack app. This means each piece is optional, and the "template" is generated based on your specific needs.
+`create-cen-app` is a CLI built by Client Engineering developers to streamline the setup of enterprise-ready full-stack applications. It provides a modular approach where you can choose the template flavor that best suits your project's needs.
 
-After countless projects, working with many different customers and teams, we've found that this stack is the best for Client Engineering. It provides flexibility when working with data scientists and makes implementing new features a breeze (which is crucial in CLient Engineering).
+After countless projects with various customers and teams, we've found that this stack provides the perfect balance of flexibility, scalability, and developer experience. The combination of FastAPI and React allows seamless integration with data science workflows while maintaining enterprise-grade security and features.
 
-This is **NOT** an all-inclusive template. We **expect** you to bring your own libraries that solve the needs of **YOUR** application.
+This is **NOT** just another template. We've carefully curated this stack based on real-world enterprise requirements and client engineering best practices. While we provide a robust foundation, we **expect** you to customize and extend it based on **YOUR** specific application needs.
 
 <h2 id="getting-started">Getting Started</h2>
 
-To scaffold an app using `create-cen-app`, run any of the following three commands and answer the command prompt questions:
+To scaffold an app using `create-cen-app`, run any of the following commands and follow the interactive prompts:
 
 ### npm
 
