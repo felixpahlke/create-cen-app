@@ -135,7 +135,7 @@ export const preflightCheck = async ({
       }
     }
 
-    if (flavour !== "backend-only") {
+    if (flavour !== "backend-only" && flavour !== "backend-only-no-db") {
       const nodeInstalled = await checkIfNodeInstalled();
       if (!nodeInstalled) {
         missingCriticalDependencies.push("Node.js 20+");

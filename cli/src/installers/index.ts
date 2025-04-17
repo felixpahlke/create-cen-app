@@ -129,6 +129,7 @@ export type AvailableFlavours =
   | "main"
   | "oauth-proxy"
   | "backend-only"
+  | "backend-only-no-db"
   | "main-custom-ui"
   | "oauth-proxy-custom-ui"; // | "go" | "java"
 
@@ -163,6 +164,11 @@ export const flavourDisplayList: FlavourDisplay[] = [
     value: "backend-only",
     name: "backend-only",
     description: "API-only with API key auth",
+  },
+  {
+    value: "backend-only-no-db",
+    name: "backend-only-no-db",
+    description: "API-only with API key auth, no database",
   },
   {
     value: "main-custom-ui",

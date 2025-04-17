@@ -84,6 +84,7 @@ export const fullStackInstaller = async ({
   }
   if (
     flavour === "backend-only" ||
+    flavour === "backend-only-no-db" ||
     flavour === "main" ||
     flavour === "oauth-proxy" ||
     flavour === "main-custom-ui" ||
@@ -135,7 +136,7 @@ export const fullStackInstaller = async ({
       );
     }
   }
-  if (flavour !== "backend-only") {
+  if (flavour !== "backend-only" && flavour !== "backend-only-no-db") {
     await installDependencies({ frontendDir });
   }
 };

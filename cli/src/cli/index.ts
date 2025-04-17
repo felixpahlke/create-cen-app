@@ -268,7 +268,7 @@ export const runCli = async () => {
           const command = pkgManager === "yarn" ? pkgManager : `${pkgManager} install`;
           const setupEnv = await p.confirm({
             message:
-              flavour === "backend-only"
+              flavour === "backend-only" || flavour === "backend-only-no-db"
                 ? `Would you like us to run ${chalk.magenta("'uv sync'")}?`
                 : flavour === "go" || flavour === "java"
                 ? `Would you like us to run ${chalk.magenta(`'${command}'`)}?`

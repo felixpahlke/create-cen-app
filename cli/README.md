@@ -48,6 +48,7 @@ The stack is focused on **simplicity**, **modularity**, and **enterprise-ready f
   - `main` - Default with built-in user management
   - `oauth-proxy` - External Identity Provider integration
   - `backend-only` - FastAPI backend only
+  - `backend-only-no-db` - FastAPI backend only, no database
   - `main-custom-ui` - Custom UI with shadcn/ui
   - `oauth-proxy-custom-ui` - OAuth with custom UI
 

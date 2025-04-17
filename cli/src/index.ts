@@ -56,7 +56,7 @@ const main = async () => {
     displayName,
   });
 
-  if (flavour !== "backend-only") {
+  if (flavour !== "backend-only" && flavour !== "backend-only-no-db") {
     // Write name to package.json
     const pkgJson = fs.readJSONSync(path.join(frontendDir, "package.json")) as CT3APackageJSON;
     pkgJson.name = scopedAppName;
