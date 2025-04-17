@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { initializeGit } from "./helpers/git.js";
-import { installDependencies } from "./helpers/installDependencies.js";
 import { getVersion } from "./utils/getCENVersion.js";
 import { getNpmVersion, renderVersionWarning } from "./utils/renderVersionWarning.js";
 import * as p from "@clack/prompts";
@@ -10,7 +9,6 @@ import { type PackageJson } from "type-fest";
 import { runCli } from "~/cli/index.js";
 import { createProject } from "~/helpers/createProject.js";
 import { logNextSteps } from "~/helpers/logNextSteps.js";
-import { buildPkgInstallerMap } from "~/installers/index.js";
 import { parseNameAndPath } from "~/utils/parseNameAndPath.js";
 import { renderTitle } from "~/utils/renderTitle.js";
 
@@ -27,33 +25,17 @@ const main = async () => {
 
   const {
     appName,
-    packages,
-    displayName,
-    backend,
-    pythonVersion,
     flavour,
-    template,
-    // envVars,
-    flags: { noGit, noInstall, noVenv, proxy },
+    flags: { noGit, noInstall },
   } = await runCli();
-
-  const usePackages = buildPkgInstallerMap(packages);
 
   // e.g. dir/@mono/app returns ["@mono/app", "dir/app"]
   const [scopedAppName, appDir] = parseNameAndPath(appName);
 
-  const { projectDir, frontendDir, backendDir, missingDependencies } = await createProject({
+  const { projectDir, frontendDir, missingDependencies } = await createProject({
     projectName: appDir,
-    packages: usePackages,
-    backend,
-    pythonVersion,
     noInstall,
-    noVenv,
-    proxy,
-    template: template.value,
     flavour,
-    // envVars,
-    displayName,
   });
 
   if (flavour !== "backend-only" && flavour !== "backend-only-no-db") {
@@ -66,23 +48,13 @@ const main = async () => {
     });
   }
 
-  if (!noInstall && template.value === "create-cen-app") {
-    await installDependencies({ frontendDir });
-  }
-
   if (!noGit) {
     await initializeGit(projectDir);
   }
 
   logNextSteps({
     projectName: appDir,
-    packages: usePackages,
-    template: template.value,
     noInstall,
-    frontendDir,
-    backendDir,
-    backend,
-    noVenv,
     missingDependencies,
     flavour,
   });

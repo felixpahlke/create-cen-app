@@ -1,108 +1,24 @@
 import * as p from "@clack/prompts";
 import chalk from "chalk";
 import { DEFAULT_APP_NAME } from "~/consts.js";
-import {
-  AvailableBackends,
-  AvailableFlavours,
-  AvailableTemplates,
-  type InstallerOptions,
-} from "~/installers/index.js";
-import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
+import { AvailableFlavours } from "~/installers/index.js";
 
 interface LogNextStepsProps {
   projectName: string;
-  frontendDir?: string;
-  backendDir?: string;
-  packages?: InstallerOptions["packages"];
-  backend: AvailableBackends;
-  noInstall?: boolean;
-  noVenv: boolean;
-  flavour: AvailableFlavours;
-  template: AvailableTemplates;
+  noInstall: boolean;
   missingDependencies: string[];
+  flavour: AvailableFlavours;
 }
 
 // This logs the next steps that the user should take in order to advance the project
 export const logNextSteps = ({
   projectName = DEFAULT_APP_NAME,
-  packages,
-  backend,
-  frontendDir,
-  noInstall,
-  noVenv,
-  template,
   flavour,
+  //TODO: add next-steps message if noInstall is true
+  noInstall,
   missingDependencies,
 }: LogNextStepsProps) => {
   p.log.info(`${chalk.bold.green("All done!")} 🎉\n`);
-
-  if (template === "create-cen-app") {
-    createCenAppNextSteps({
-      projectName,
-      noVenv,
-      frontendDir: frontendDir ?? "",
-      noInstall: noInstall ?? true,
-      backend,
-    });
-  }
-
-  if (template === "full-stack-cen-template") {
-    createFullStackCenTemplateNextSteps({ projectName, flavour, missingDependencies });
-  }
-  p.log.message("");
-  p.outro(`${chalk.bold.green("Have fun building!")} 🚀`);
-};
-
-const createCenAppNextSteps = ({
-  projectName,
-  noVenv,
-  frontendDir,
-  noInstall,
-  backend,
-}: {
-  projectName: string;
-  noVenv: boolean;
-  frontendDir: string;
-  noInstall: boolean;
-  backend: AvailableBackends;
-}) => {
-  const pkgManager = getUserPkgManager();
-  const usingExternalBackend = backend !== "default" && backend !== "trpc";
-  let steps = `${chalk.bold.cyan("Next steps:")}\n\n`;
-
-  if (usingExternalBackend) {
-    if (noVenv) {
-      steps += `  ${chalk.cyan("--setup venv and install dependencies--")}\n`;
-    } else {
-      steps += `  ${chalk.cyan("cd")} ${projectName}/backend\n  ${chalk.cyan(
-        "./run",
-      )}\n\n  ${chalk.yellow("In another terminal window:")}\n\n  ${chalk.cyan(
-        "cd",
-      )} ${frontendDir}\n`;
-    }
-  } else if (projectName !== ".") {
-    steps += `  ${chalk.cyan("cd")} ${projectName}\n`;
-  }
-
-  if (noInstall) {
-    // To reflect yarn's default behavior of installing packages when no additional args provided
-    steps += `  ${chalk.cyan(pkgManager)}${pkgManager !== "yarn" ? " install" : ""}\n`;
-  }
-
-  steps += `  ${chalk.cyan(pkgManager === "npm" ? "npm run" : pkgManager)} dev\n`;
-  p.log.info(steps);
-};
-
-const createFullStackCenTemplateNextSteps = ({
-  projectName,
-  flavour,
-  missingDependencies,
-}: {
-  projectName: string;
-  flavour: AvailableFlavours;
-  missingDependencies: string[];
-}) => {
-  // Log git config note before next steps
 
   let gitNote = `${chalk.bold.cyan("Note:")}\n\n`;
 
@@ -135,4 +51,7 @@ const createFullStackCenTemplateNextSteps = ({
   steps += `  ${chalk.cyan("docker compose watch")}\n`;
 
   p.log.info(steps);
+
+  p.log.message("");
+  p.outro(`${chalk.bold.green("Have fun building!")} 🚀`);
 };
