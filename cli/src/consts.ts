@@ -18,4 +18,4 @@ export const DEFAULT_APP_NAME = "my-cen-app";
 export const CREATE_CEN_APP = "create-cen-app";
 
 export const FULL_STACK_CEN_TEMPLATE_REPO =
-  "git@github.ibm.com:technology-garage-dach/full-stack-cen-template.git";
+  "git@github.ibm.com:client-engineering-dach/full-stack-cen-template.git";
